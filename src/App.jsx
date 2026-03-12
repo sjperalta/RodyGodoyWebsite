@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 import { LanguageProvider } from './context/LanguageContext';
 import Navbar from './components/Navbar';

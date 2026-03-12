@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { fadeInUp, staggerContainer, imageZoom } from '../styles/animations';
