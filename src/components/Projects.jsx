@@ -6,7 +6,7 @@ import projectsData from '../data/projects_index.json';
 import { fadeInUp, staggerContainer, fadeScale } from '../styles/animations';
 
 const Projects = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [filter, setFilter] = useState('ALL'); // Internal filter key in English
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -17,11 +17,11 @@ const Projects = () => {
       ...project,
       index: String(index + 1).padStart(2, '0'),
       // Use language-specific fields
-      localizedName: project.name[language] || project.name['es'],
-      localizedCategory: (project.category[language] || project.category['es']).toUpperCase(),
-      localizedDescription: project.description[language] || project.description['es'],
-      localizedLocation: project.location[language] || project.location['es'],
-      localizedArea: project.area[language] || project.area['es'],
+      localizedName: project.name[i18n.language] || project.name['es'],
+      localizedCategory: (project.category[i18n.language] || project.category['es']).toUpperCase(),
+      localizedDescription: project.description[i18n.language] || project.description['es'],
+      localizedLocation: project.location[i18n.language] || project.location['es'],
+      localizedArea: project.area[i18n.language] || project.area['es'],
       // The first file is used as the cover
       coverIsVideo: project.files[0].endsWith('.mp4'),
       cover: `/projects_assets/${project.files[0]}`

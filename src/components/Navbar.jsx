@@ -18,12 +18,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es');
-  };
-
-  const language = i18n.language;
-
   const navLinks = [
     { name: t('nav.nav_home'), href: '#' },
     { name: t('nav.projects'), href: '#proyectos' },
