@@ -1,9 +1,10 @@
+// Removed React import
 import { motion } from 'framer-motion';
-import { useLanguage } from '../hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import { fadeInUp, staggerContainer } from '../styles/animations';
 
 const Process = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   const steps = [
     {

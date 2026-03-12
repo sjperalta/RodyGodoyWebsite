@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
-import { LanguageProvider } from './context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -55,25 +55,33 @@ const CustomCursor = () => {
   );
 };
 
-function App() {
+const AppContent = () => {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
+
   return (
-    <LanguageProvider>
-      <div className="min-h-screen bg-bg-light transition-colors duration-300">
-        <CustomCursor />
-        <Navbar />
-        <main>
-          <Hero />
-          <About />
-          <Projects />
-          <Philosophy />
-          <Services />
-          <Process />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-    </LanguageProvider>
+    <div className="min-h-screen bg-bg-light transition-colors duration-300">
+      <CustomCursor />
+      <Navbar />
+      <main>
+        <Hero />
+        <About />
+        <Projects />
+        <Philosophy />
+        <Services />
+        <Process />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
   );
+}
+
+function App() {
+  return <AppContent />;
 }
 
 export default App;

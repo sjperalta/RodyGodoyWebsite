@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import projectsData from '../data/projects_index.json';
 import { fadeInUp, staggerContainer, fadeScale } from '../styles/animations';
 
 const Projects = () => {
-  const { language, t } = useLanguage();
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('ALL'); // Internal filter key in English
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);

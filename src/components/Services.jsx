@@ -1,5 +1,6 @@
+// Removed React import
 import { motion } from 'framer-motion';
-import { useLanguage } from '../hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import { fadeInUp, staggerContainer } from '../styles/animations';
 import { 
   PencilRuler, 
@@ -11,7 +12,7 @@ import {
 } from 'lucide-react';
 
 const Services = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   const serviceCategories = [
     {

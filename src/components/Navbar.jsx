@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
+import { useTranslation } from 'react-i18next';
 import logo from '../assets/logo.png';
 
 const Navbar = () => {
-  const { language, toggleLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { t, i18n } = useTranslation();
 
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -16,6 +17,12 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es');
+  };
+
+  const language = i18n.language;
 
   const navLinks = [
     { name: t('nav.nav_home'), href: '#' },
@@ -44,12 +51,12 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-          <button 
-            onClick={toggleLanguage}
-            className="px-5 py-2 border border-accent-line rounded-full text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
-          >
-            {language === 'es' ? 'EN' : 'ES'}
-          </button>
+            <button 
+              onClick={() => i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es')}
+              className="px-3 py-1 text-xs font-bold tracking-widest border border-white/30 rounded-sm hover:bg-white hover:text-bg-dark transition-colors uppercase"
+            >
+              {i18n.language === 'es' ? 'EN' : 'ES'}
+            </button>
         </div>
 
         {/* Mobile Toggle */}
@@ -78,12 +85,15 @@ const Navbar = () => {
                   {link.name}
                 </a>
               ))}
-              <button 
-                onClick={() => { toggleLanguage(); setIsOpen(false); }}
-                className="w-fit px-5 py-2 border border-accent-line rounded-full text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-white transition-all"
-              >
-                {language === 'es' ? 'ENGLISH' : 'ESPAÑOL'}
-              </button>
+                <button 
+                  onClick={() => {
+                    i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es');
+                    setIsOpen(false);
+                  }}
+                  className="px-6 py-2 border border-white/30 rounded-sm hover:bg-white hover:text-bg-dark transition-colors uppercase text-sm font-bold tracking-widest inline-block"
+                >
+                  {i18n.language === 'es' ? 'Switch to English' : 'Cambiar a Español'}
+                </button>
             </div>
           </motion.div>
         )}
