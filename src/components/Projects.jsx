@@ -24,7 +24,7 @@ const Projects = () => {
       localizedArea: project.area[i18n.language] || project.area['es'],
       // The first file is used as the cover
       coverIsVideo: project.files[0].endsWith('.mp4'),
-      cover: `/projects_assets/${project.files[0]}`
+      cover: `${import.meta.env.BASE_URL}projects_assets/${project.files[0]}`
     };
   });
 
@@ -226,14 +226,14 @@ const Projects = () => {
                     >
                       {selectedProject.files[currentMediaIndex].endsWith('.mp4') ? (
                         <video 
-                          src={`/projects_assets/${selectedProject.files[currentMediaIndex]}`}
+                          src={`${import.meta.env.BASE_URL}projects_assets/${selectedProject.files[currentMediaIndex]}`}
                           className="w-full h-full object-contain"
                           controls
                           autoPlay
                         />
                       ) : (
                         <img 
-                          src={`/projects_assets/${selectedProject.files[currentMediaIndex]}`}
+                          src={`${import.meta.env.BASE_URL}projects_assets/${selectedProject.files[currentMediaIndex]}`}
                           alt={`${selectedProject.name} visual ${currentMediaIndex + 1}`}
                           className="w-full h-full object-contain"
                         />
