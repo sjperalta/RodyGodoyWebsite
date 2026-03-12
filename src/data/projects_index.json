@@ -1,0 +1,272 @@
+[
+  {
+    "id": "jardin-de-jade",
+    "name": {
+      "es": "Jardin de Jade",
+      "en": "Jardin de Jade"
+    },
+    "category": {
+      "es": "Comercial",
+      "en": "Commercial"
+    },
+    "description": {
+      "es": "Un santuario gastronómico que fusiona la tradición milenaria con el minimalismo contemporáneo. Este diseño destaca por su uso de texturas naturales e iluminación tenue.",
+      "en": "A gastronomic sanctuary that merges ancient tradition with contemporary minimalism. This design features natural textures and dim lighting."
+    },
+    "location": {
+      "es": "Puerto Cortés, Honduras",
+      "en": "Puerto Cortés, Honduras"
+    },
+    "year": "2023",
+    "area": {
+      "es": "250 m²",
+      "en": "2,690 sq ft"
+    },
+    "files": [
+      "Jardin de Jade/Propuesta de diseño para restaurante de comida china . 😍.webp",
+      "Jardin de Jade/Propuesta de diseño para restaurante de comida china . 😍 (1).webp",
+      "Jardin de Jade/Propuesta de diseño para restaurante de comida china . 😍 (2).webp"
+    ]
+  },
+  {
+    "id": "casa-escondida",
+    "name": {
+      "es": "Casa Escondida",
+      "en": "Hidden House"
+    },
+    "category": {
+      "es": "Residencial",
+      "en": "Residential"
+    },
+    "description": {
+      "es": "Un desafío arquitectónico resuelto con ingenio en un terreno irregular de solo 6 metros de frente, expandiéndose orgánicamente para crear un refugio privado de luz y aire.",
+      "en": "An architectural challenge ingeniously solved on an irregular lot with only 6 meters of frontage, expanding organically to create a private haven of light and air."
+    },
+    "location": {
+      "es": "Omoa, Cortés",
+      "en": "Omoa, Cortés"
+    },
+    "year": "2024",
+    "area": {
+      "es": "180 m²",
+      "en": "1,940 sq ft"
+    },
+    "files": [
+      "Casa Escondida/Diseño de casa en un terreno irregular. Con 6 metros de frente, se va expandiendo al fondo. Gra (1).webp",
+      "Casa Escondida/Diseño de casa en un terreno irregular. Con 6 metros de frente, se va expandiendo al fondo. Gra (2).webp",
+      "Casa Escondida/Diseño de casa en un terreno irregular. Con 6 metros de frente, se va expandiendo al fondo. Gra (3).webp",
+      "Casa Escondida/Diseño de casa en un terreno irregular. Con 6 metros de frente, se va expandiendo al fondo. Gra (4).webp",
+      "Casa Escondida/Diseño de casa en un terreno irregular. Con 6 metros de frente, se va expandiendo al fondo. Gra (5).webp",
+      "Casa Escondida/Diseño de casa en un terreno irregular. Con 6 metros de frente, se va expandiendo al fondo. Gra.webp"
+    ]
+  },
+  {
+    "id": "airbnb-refugio",
+    "name": {
+      "es": "Airbnb refugio perfecto",
+      "en": "Airbnb Perfect Retreat"
+    },
+    "category": {
+      "es": "Interiorismo",
+      "en": "Interior Design"
+    },
+    "description": {
+      "es": "Transformación de un espacio compacto en un destino de lujo. Diseño enfocado en la multifuncionalidad y la calidez táctil para el viajero moderno.",
+      "en": "Transformation of a compact space into a luxury destination. Design focused on multifunctionality and tactile warmth for the modern traveler."
+    },
+    "location": {
+      "es": "San Pedro Sula, Honduras",
+      "en": "San Pedro Sula, Honduras"
+    },
+    "year": "2023",
+    "area": {
+      "es": "65 m²",
+      "en": "700 sq ft"
+    },
+    "files": [
+      "Airbnb refugio perfecto.mp4"
+    ]
+  },
+  {
+    "id": "area-social-escencia",
+    "name": {
+      "es": "Area Social Escencia",
+      "en": "Escencia Social Area"
+    },
+    "category": {
+      "es": "Interiorismo",
+      "en": "Interior Design"
+    },
+    "description": {
+      "es": "Un diseño que celebra el encuentro. Espacio social que combina elegancia y funcionalidad, integrando zonas de descanso con una iluminación escenográfica.",
+      "en": "A design that celebrates gatherings. A social space that combines elegance and functionality, integrating lounge areas with scenographic lighting."
+    },
+    "location": {
+      "es": "Puerto Cortés, Honduras",
+      "en": "Puerto Cortés, Honduras"
+    },
+    "year": "2024",
+    "area": {
+      "es": "120 m²",
+      "en": "1,290 sq ft"
+    },
+    "files": [
+      "Area Social Escencia.mp4"
+    ]
+  },
+  {
+    "id": "plaza-vista-norte",
+    "name": {
+      "es": "Plaza Vista Norte",
+      "en": "Vista Norte Plaza"
+    },
+    "category": {
+      "es": "Comercial",
+      "en": "Commercial"
+    },
+    "description": {
+      "es": "Hito comercial que redefine el paisaje urbano local. Integra locales comerciales con espacios de transición fluidos y vistas privilegiadas al entorno.",
+      "en": "A commercial landmark that redefines the local urban landscape. Integrates commercial premises with fluid transition spaces and privileged views of the surroundings."
+    },
+    "location": {
+      "es": "Choloma, Cortés",
+      "en": "Choloma, Cortés"
+    },
+    "year": "2024",
+    "area": {
+      "es": "1,200 m²",
+      "en": "12,900 sq ft"
+    },
+    "files": [
+      "Plaza Vista Norte.mp4"
+    ]
+  },
+  {
+    "id": "casa-altura",
+    "name": {
+      "es": "Casa Altura",
+      "en": "Height House"
+    },
+    "category": {
+      "es": "Residencial",
+      "en": "Residential"
+    },
+    "description": {
+      "es": "Una oda a la elegancia vertical. Residencia que aprovecha su ubicación elevada para integrar el paisaje exterior mediante grandes ventanales y estructuras limpias.",
+      "en": "An ode to vertical elegance. A residence that takes advantage of its elevated location to integrate the outdoor landscape through large windows and clean structures."
+    },
+    "location": {
+      "es": "Siguatepeque, Honduras",
+      "en": "Siguatepeque, Honduras"
+    },
+    "year": "2023",
+    "area": {
+      "es": "320 m²",
+      "en": "3,440 sq ft"
+    },
+    "files": [
+      "Casa Altura/Casa Altura.webp"
+    ]
+  },
+  {
+    "id": "casa-forma",
+    "name": {
+      "es": "Casa Forma",
+      "en": "Form House"
+    },
+    "category": {
+      "es": "Residencial",
+      "en": "Residential"
+    },
+    "description": {
+      "es": "Exploración volumétrica y pureza formal. Geometría audaz con un juego de llenos y vacíos que da como resultado espacios abiertos, luminosos y modernos.",
+      "en": "Volumetric exploration and formal purity. Bold geometry with a play of solids and voids resulting in open, bright, and modern spaces."
+    },
+    "location": {
+      "es": "Villanueva, Cortés",
+      "en": "Villanueva, Cortés"
+    },
+    "year": "2024",
+    "area": {
+      "es": "210 m²",
+      "en": "2,260 sq ft"
+    },
+    "files": [
+      "Casa Forma/🏡 Un diseño moderno y minimalista que combina espacios abiertos con detalles únicos para crear (1).webp",
+      "Casa Forma/🏡 Un diseño moderno y minimalista que combina espacios abiertos con detalles únicos para crear (2).webp",
+      "Casa Forma/🏡 Un diseño moderno y minimalista que combina espacios abiertos con detalles únicos para crear (3).webp",
+      "Casa Forma/🏡 Un diseño moderno y minimalista que conoce espacios abiertos con detalles únicos para crear (4).webp",
+      "Casa Forma/🏡 Un diseño moderno y minimalista que combina espacios abiertos con detalles únicos para crear (5).webp",
+      "Casa Forma/🏡 Un diseño moderno y minimalista que combina espacios abiertos con detalles únicos para crear.webp"
+    ]
+  },
+  {
+    "id": "la-vela",
+    "name": {
+      "es": "La Vela",
+      "en": "The Sail"
+    },
+    "category": {
+      "es": "Comercial",
+      "en": "Commercial"
+    },
+    "description": {
+      "es": "Proyecto fundacional de carácter emblemático inspirado en la ligereza y el movimiento. Un testimonio de exploración técnica y pasión por el detalle arquitectónico.",
+      "en": "An emblematic foundational project inspired by lightness and movement. A testament to technical exploration and passion for architectural detail."
+    },
+    "location": {
+      "es": "Puerto Cortés, Honduras",
+      "en": "Puerto Cortés, Honduras"
+    },
+    "year": "2018",
+    "area": {
+      "es": "450 m²",
+      "en": "4,840 sq ft"
+    },
+    "files": [
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (1).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (2).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (3).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (4).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (5).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (6).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind (7).webp",
+      "La Vela/Este proyecto es muy especial para mí, fue prácticamente mi primer proyecto como arquitecto ind.webp"
+    ]
+  },
+  {
+    "id": "queen-studio",
+    "name": {
+      "es": "Queen Studio",
+      "en": "Queen Studio"
+    },
+    "category": {
+      "es": "Comercial",
+      "en": "Commercial"
+    },
+    "description": {
+      "es": "Diseño de autor para una experiencia de belleza superior. Fusiona la sofisticación estética con la funcionalidad técnica de un estudio de interiorismo premium.",
+      "en": "Signature design for a superior beauty experience. Merges aesthetic sophistication with the technical functionality of a premium interior design studio."
+    },
+    "location": {
+      "es": "Puerto Cortés, Honduras",
+      "en": "Puerto Cortés, Honduras"
+    },
+    "year": "2024",
+    "area": {
+      "es": "85 m²",
+      "en": "915 sq ft"
+    },
+    "files": [
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (1).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (2).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (3).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (4).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (5).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (6).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (7).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p (8).webp",
+      "Queen Studio/Propuesta de diseño para salón de belleza @queenstudiohn y a ejecutar por @olehomes.hn Diseño p.webp"
+    ]
+  }
+]
