@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../hooks/useLanguage';
 import projectsData from '../data/projects_index.json';
 import { fadeInUp, staggerContainer, fadeScale } from '../styles/animations';
 

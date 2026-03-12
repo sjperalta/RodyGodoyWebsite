@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { translations } from './translations';
 
-const LanguageContext = createContext();
+export const LanguageContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 export const LanguageProvider = ({ children }) => {
@@ -33,12 +33,4 @@ export const LanguageProvider = ({ children }) => {
       {children}
     </LanguageContext.Provider>
   );
-};
-
-export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
 };

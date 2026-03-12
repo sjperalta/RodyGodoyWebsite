@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../hooks/useLanguage';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '../styles/animations';
 

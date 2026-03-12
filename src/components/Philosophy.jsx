@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../hooks/useLanguage';
 import { fadeInUp, staggerContainer } from '../styles/animations';
 
 const Philosophy = () => {
