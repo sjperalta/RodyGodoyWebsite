@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "studio_name": "Rody Godoy Architecture",
+    "nav_home": "Home",
+    "projects": "Projects",
+    "studio": "Studio",
+    "services": "Services",
+    "process": "Process",
+    "contact": "Contact"
+  },
+  "hero": {
+    "subtitle": "Architect Rody Godoy",
+    "tagline": "Architectural Design | Planning | Construction",
+    "description": "Architecture with purpose. We create memorable spaces through light, matter, and functional innovation.",
+    "cta_primary": "View Projects",
+    "cta_secondary": "Contact Us",
+    "scroll": "Scroll"
+  },
+  "about": {
+    "subtitle": "About Us",
+    "title": "Architecture that creates experiences",
+    "p1": "At Rody Godoy Architecture we believe that architecture must go beyond building spaces; it must create experiences that improve people's lives.",
+    "p2": "Our studio specializes in the design and development of architectural projects that combine functionality, aesthetics, and sustainability, adapting to each client's needs.",
+    "signature_title": "Founder & Principal Architect"
+  },
+  "projects": {
+    "subtitle": "Portfolio",
+    "title": "Featured Projects",
+    "view_project": "View Project",
+    "details_title": "Project Details",
+    "location": "Location",
+    "year": "Year",
+    "area": "Built Area",
+    "filter_all": "ALL",
+    "filter_residential": "RESIDENTIAL",
+    "filter_commercial": "COMMERCIAL",
+    "filter_interior": "INTERIOR DESIGN"
+  },
+  "philosophy": {
+    "subtitle": "Philosophy",
+    "title": "Design with Purpose",
+    "p1_title": "Functional",
+    "p1_desc": "Each space must respond to the real needs of those who use it.",
+    "p2_title": "Aesthetics",
+    "p2_desc": "Design must transmit identity, balance, and character.",
+    "p3_title": "Sustainable",
+    "p3_desc": "We seek to integrate solutions that optimize resources, energy, and environmental comfort.",
+    "p4_title": "Durable",
+    "p4_desc": "Quality in design and materials guarantees spaces that endure over time."
+  },
+  "services": {
+    "subtitle": "Our Services",
+    "title": "Comprehensive solutions for every stage.",
+    "s1_title": "Architectural Design",
+    "s1_items": ["Conceptual design", "Architectural plans", "3D modeling", "Visualizations", "Facade design", "Space optimization"],
+    "s2_title": "Residential Design",
+    "s2_items": ["Single-family homes", "Luxury residences", "Remodeling", "Beach/mountain houses", "Housing developments"],
+    "s3_title": "Commercial Design",
+    "s3_items": ["Corporate offices", "Retail spaces", "Restaurants", "Office buildings", "Shopping centers"],
+    "s4_title": "Remodeling",
+    "s4_items": ["Interior redesign", "Facade updates", "Additions", "Space optimization"],
+    "s5_title": "Construction Supervision",
+    "s5_items": ["Site supervision", "Quality control", "Contractor coordination", "Progress monitoring"],
+    "s6_title": "Consulting",
+    "s6_items": ["Site evaluation", "Feasibility analysis", "Project optimization", "Cost estimates"]
+  },
+  "process": {
+    "subtitle": "Our Process",
+    "title": "From idea to reality.",
+    "st1_title": "Initial Consultation",
+    "st1_desc": "We listen to the client's ideas and needs to understand the project's scope and vision.",
+    "st2_title": "Conceptualization",
+    "st2_desc": "We develop design proposals and realistic visualizations that bring initial ideas to life.",
+    "st3_title": "Project Development",
+    "st3_desc": "We prepare detailed technical plans and all necessary documentation for execution.",
+    "st4_title": "Construction",
+    "st4_desc": "We accompany the execution process, ensuring every detail is built according to design.",
+    "st5_title": "Final Delivery",
+    "st5_desc": "The project comes to life with the highest quality standards, ready to be inhabited."
+  },
+  "contact": {
+    "subtitle": "Contact",
+    "title": "Let's Talk About Your Project",
+    "description": "We are ready to help you transform your idea into a real space. Schedule a consultation to discuss your project and discover how we can work together.",
+    "form_name": "Full Name",
+    "form_email": "Email Address",
+    "form_phone": "Phone Number",
+    "form_message": "Message",
+    "form_submit": "Send Message",
+    "info_title": "Contact Information",
+    "social_title": "Social Media"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "schedule_label": "Hours:",
+    "schedule": "Mon - Fri: 8:00 AM - 5:00 PM"
+  }
+}

@@ -1,11 +1,11 @@
-import React from 'react';
+// Removed React import
 import { motion } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { fadeInUp } from '../styles/animations';
 import architectPhoto from '../assets/architect.jpg';
 
 const About = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   return (
     <section id="nosotros" className="section-padding bg-white overflow-hidden">

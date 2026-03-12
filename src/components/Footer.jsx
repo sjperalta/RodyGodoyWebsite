@@ -1,8 +1,8 @@
-import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import logo from '../assets/logo.png';
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   const socialLinks = [
     { name: 'Instagram', url: 'https://www.instagram.com/arq.godoy.hn/', label: 'I' },

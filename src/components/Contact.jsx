@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '../styles/animations';
 
 const Contact = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',

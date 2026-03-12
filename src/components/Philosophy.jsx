@@ -1,10 +1,10 @@
-import React from 'react';
+// Removed React import
 import { motion } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { fadeInUp, staggerContainer } from '../styles/animations';
 
 const Philosophy = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   const principles = [
     {

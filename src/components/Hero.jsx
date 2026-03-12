@@ -1,10 +1,9 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { fadeInUp, staggerContainer, imageZoom } from '../styles/animations';
 
 const Hero = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   const titleText = "Rody Godoy";
   const studioText = t('nav.studio').split(' ')[0];
