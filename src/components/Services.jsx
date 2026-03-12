@@ -18,32 +18,32 @@ const Services = () => {
     {
       title: t('services.s1_title'),
       icon: <PencilRuler className="text-primary" size={32} />,
-      items: t('services.s1_items'),
+      items: t('services.s1_items', { returnObjects: true }),
     },
     {
       title: t('services.s2_title'),
       icon: <Home className="text-primary" size={32} />,
-      items: t('services.s2_items'),
+      items: t('services.s2_items', { returnObjects: true }),
     },
     {
       title: t('services.s3_title'),
       icon: <Building2 className="text-primary" size={32} />,
-      items: t('services.s3_items'),
+      items: t('services.s3_items', { returnObjects: true }),
     },
     {
       title: t('services.s4_title'),
       icon: <RefreshCcw className="text-primary" size={32} />,
-      items: t('services.s4_items'),
+      items: t('services.s4_items', { returnObjects: true }),
     },
     {
       title: t('services.s5_title'),
       icon: <HardHat className="text-primary" size={32} />,
-      items: t('services.s5_items'),
+      items: t('services.s5_items', { returnObjects: true }),
     },
     {
       title: t('services.s6_title'),
       icon: <Search className="text-primary" size={32} />,
-      items: t('services.s6_items'),
+      items: t('services.s6_items', { returnObjects: true }),
     },
   ];
 
