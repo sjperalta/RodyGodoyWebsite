@@ -95,6 +95,7 @@
     "privacy": "Privacy",
     "cookies": "Cookies",
     "schedule_label": "Hours:",
-    "schedule": "Mon - Fri: 8:00 AM - 5:00 PM"
+    "schedule": "Mon - Fri: 8:00 AM - 5:00 PM",
+    "created_by": "Created by"
   }
 }

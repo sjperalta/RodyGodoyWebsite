@@ -64,8 +64,17 @@ const Footer = () => {
       </div>
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-        <p className="text-[10px] font-bold tracking-widest uppercase text-neutral-soft/30">
-          © {new Date().getFullYear()} {t('nav.studio_name')}. {t('footer.rights')}
+        <p className="text-[10px] font-bold tracking-widest uppercase text-neutral-soft/30 flex flex-wrap items-center gap-x-2">
+          <span>© {new Date().getFullYear()} {t('nav.studio_name')}. {t('footer.rights')}</span>
+          <span className="opacity-20 hidden md:block">|</span>
+          <a 
+            href="https://omegatech.dev" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:text-primary transition-colors"
+          >
+            {t('footer.created_by')} omegatech.dev
+          </a>
         </p>
         <div className="flex gap-8">
           <a href="#" className="text-[10px] font-bold tracking-widest uppercase text-neutral-soft/30 hover:text-primary transition-colors">
