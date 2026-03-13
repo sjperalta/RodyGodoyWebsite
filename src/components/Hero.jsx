@@ -18,7 +18,7 @@ const Hero = () => {
         className="absolute inset-0 z-0"
       >
         <video
-          src={`${import.meta.env.BASE_URL}projects_assets/Airbnb refugio perfecto.mp4`}
+          src={`${import.meta.env.BASE_URL}projects_assets/airbnb-refugio-perfecto.mp4`}
           className="w-full h-full object-cover grayscale opacity-50"
           autoPlay
           loop
