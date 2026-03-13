@@ -17,10 +17,13 @@ const Hero = () => {
         animate="animate"
         className="absolute inset-0 z-0"
       >
-        <img
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
-          alt="Architectural structure"
-          className="w-full h-full object-cover grayscale brightness-50"
+        <video
+          src={`${import.meta.env.BASE_URL}projects_assets/Airbnb refugio perfecto.mp4`}
+          className="w-full h-full object-cover grayscale opacity-50"
+          autoPlay
+          loop
+          muted
+          playsInline
         />
         <div className="absolute inset-0 bg-gradient-to-r from-bg-dark/60 to-transparent"></div>
       </motion.div>
