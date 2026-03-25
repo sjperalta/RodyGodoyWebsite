@@ -97,5 +97,21 @@
     "schedule_label": "Horario:",
     "schedule": "Lun - Vie: 8:00 - 17:00",
     "created_by": "Creado por"
+  },
+  "admin": {
+    "login_title": "Admin",
+    "email_label": "Correo",
+    "password_label": "Contraseña",
+    "sign_in": "Entrar",
+    "signing_in": "Entrando…",
+    "back_site": "← Volver al sitio",
+    "loading": "Cargando…",
+    "not_admin_title": "Esta cuenta no es administrador.",
+    "not_admin_body": "Pide al dueño del proyecto que ejecute en el SQL Editor de Supabase: update public.profiles set is_admin = true where id = '<tu id de usuario en Authentication → Users>'.",
+    "sign_out": "Cerrar sesión",
+    "access_denied_title": "No tienes acceso de administrador.",
+    "access_denied_body": "Un dueño del proyecto debe poner is_admin = true en tu fila de public.profiles (usa el mismo id que en Authentication → Users).",
+    "back_home": "Volver al sitio",
+    "help_sign_in": "Si no puedes entrar: confirma que el usuario existe en Authentication → Users, que el login por email está activo y que el correo está confirmado (o desactiva la confirmación para pruebas)."
   }
 }
