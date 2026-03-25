@@ -1,3 +1,15 @@
+# GitHub Actions: Settings → Secrets and variables → Actions
+#
+# Secrets (recommended for the publishable/anon key):
+#   VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+#
+# Variables (repository or environment: github-pages):
+#   VITE_SUPABASE_URL                 e.g. https://YOUR_REF.supabase.co
+#
+# Optional variables:
+#   VITE_USE_STATIC_PROJECTS          set to "true" to use src/data/projects_index.json (no Supabase)
+#   VITE_SUPABASE_IMAGE_TRANSFORMS    set to "true" only on Supabase Pro+ (Storage image resize)
+
 name: Deploy React App to GitHub Pages
 
 on:
@@ -32,10 +44,18 @@ jobs:
           
       - name: Install dependencies
         run: npm ci
-        
+
+      - name: Lint
+        run: npm run lint
+
       - name: Build
         run: npm run build
-        
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY }}
+          VITE_USE_STATIC_PROJECTS: ${{ vars.VITE_USE_STATIC_PROJECTS }}
+          VITE_SUPABASE_IMAGE_TRANSFORMS: ${{ vars.VITE_SUPABASE_IMAGE_TRANSFORMS }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
