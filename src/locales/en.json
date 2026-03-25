@@ -97,5 +97,21 @@
     "schedule_label": "Hours:",
     "schedule": "Mon - Fri: 8:00 AM - 5:00 PM",
     "created_by": "Created by"
+  },
+  "admin": {
+    "login_title": "Admin",
+    "email_label": "Email",
+    "password_label": "Password",
+    "sign_in": "Sign in",
+    "signing_in": "Signing in…",
+    "back_site": "← Back to site",
+    "loading": "Loading…",
+    "not_admin_title": "This account is not an admin.",
+    "not_admin_body": "Ask a project owner to run in Supabase SQL Editor: update public.profiles set is_admin = true where id = '<your user id from Authentication → Users>'.",
+    "sign_out": "Sign out",
+    "access_denied_title": "You do not have admin access.",
+    "access_denied_body": "A project owner must set is_admin = true on your row in public.profiles (match your user id from Authentication → Users).",
+    "back_home": "Back to site",
+    "help_sign_in": "If sign-in fails: confirm the user exists under Authentication → Users, Email auth is enabled, and the email is confirmed (or disable confirm email for testing)."
   }
 }
