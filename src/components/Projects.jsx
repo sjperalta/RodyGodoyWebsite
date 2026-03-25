@@ -4,6 +4,7 @@ import { ArrowRight, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import projectsData from '../data/projects_index.json';
 import { supabase, getProjectImagePublicUrl, getProjectVideoPublicUrl } from '../utils/supabase';
+import { pickLocalized } from '../utils/locale';
 import { fadeInUp, staggerContainer, fadeScale } from '../styles/animations';
 
 const useStaticProjects = import.meta.env.VITE_USE_STATIC_PROJECTS === 'true';
@@ -13,7 +14,7 @@ const THUMB_TRANSFORM = { width: 900, height: 560, resize: 'cover' };
 const GRID_COVER_TRANSFORM = { width: 900, height: 560, resize: 'cover' };
 const MODAL_IMAGE_TRANSFORM = { width: 1600, height: 1200, resize: 'contain' };
 
-function prepareStaticProject(project, index, i18n) {
+function prepareStaticProject(project, index, language) {
   const base = import.meta.env.BASE_URL;
   const mediaItems = (project.files || []).map((rel) => {
     const isVideo = rel.endsWith('.mp4');
@@ -27,18 +28,18 @@ function prepareStaticProject(project, index, i18n) {
     ...project,
     index: String(index + 1).padStart(2, '0'),
     filterKey: project.category?.en?.toUpperCase().replace(/\s+/g, ' ') ?? '',
-    localizedName: project.name[i18n.language] || project.name['es'],
-    localizedCategory: (project.category[i18n.language] || project.category['es']).toUpperCase(),
-    localizedDescription: project.description[i18n.language] || project.description['es'],
-    localizedLocation: project.location[i18n.language] || project.location['es'],
-    localizedArea: project.area[i18n.language] || project.area['es'],
+    localizedName: pickLocalized(project.name, language),
+    localizedCategory: pickLocalized(project.category, language).toUpperCase(),
+    localizedDescription: pickLocalized(project.description, language),
+    localizedLocation: pickLocalized(project.location, language),
+    localizedArea: pickLocalized(project.area, language),
     coverIsVideo: first?.isVideo ?? false,
     cover: first?.url ?? '',
     mediaItems,
   };
 }
 
-function prepareRemoteProject(row, index, i18n) {
+function prepareRemoteProject(row, index, language) {
   const cat = row.project_categories;
   const filterKey = cat?.filter_key ?? '';
   const label = cat?.label || {};
@@ -63,11 +64,11 @@ function prepareRemoteProject(row, index, i18n) {
     year: row.year,
     filterKey,
     index: String(index + 1).padStart(2, '0'),
-    localizedName: row.name?.[i18n.language] || row.name?.es || '',
-    localizedCategory: (label[i18n.language] || label.es || filterKey).toUpperCase(),
-    localizedDescription: row.description?.[i18n.language] || row.description?.es || '',
-    localizedLocation: row.location?.[i18n.language] || row.location?.es || '',
-    localizedArea: row.area?.[i18n.language] || row.area?.es || '',
+    localizedName: pickLocalized(row.name, language),
+    localizedCategory: (pickLocalized(label, language) || filterKey).toUpperCase(),
+    localizedDescription: pickLocalized(row.description, language),
+    localizedLocation: pickLocalized(row.location, language),
+    localizedArea: pickLocalized(row.area, language),
     coverIsVideo: first?.isVideo ?? false,
     cover: first
       ? first.isVideo
@@ -155,18 +156,19 @@ export default function Projects() {
       { key: 'ALL', label: t('projects.filter_all') },
       ...remoteCategories.map((c) => ({
         key: c.filter_key,
-        label: (c.label?.[i18n.language] || c.label?.es || c.filter_key).toUpperCase(),
+        label: (pickLocalized(c.label, i18n.language) || c.filter_key).toUpperCase(),
       })),
     ];
   }, [remoteCategories, i18n.language, t]);
 
   const preparedProjects = useMemo(() => {
+    const lang = i18n.language;
     if (useStaticProjects) {
-      return projectsData.map((p, i) => prepareStaticProject(p, i, i18n));
+      return projectsData.map((p, i) => prepareStaticProject(p, i, lang));
     }
     if (!remoteProjects) return [];
-    return remoteProjects.map((row, i) => prepareRemoteProject(row, i, i18n));
-  }, [remoteProjects, i18n]);
+    return remoteProjects.map((row, i) => prepareRemoteProject(row, i, lang));
+  }, [remoteProjects, i18n.language]);
 
   const filteredProjects =
     filter === 'ALL' ? preparedProjects : preparedProjects.filter((p) => p.filterKey === filter);
