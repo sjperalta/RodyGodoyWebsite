@@ -3,7 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import projectsData from '../data/projects_index.json';
-import { supabase, getProjectImagePublicUrl, getProjectVideoPublicUrl } from '../utils/supabase';
+import {
+  supabase,
+  getProjectImagePublicUrl,
+  getProjectVideoPublicUrl,
+  isSupabaseConfigured,
+} from '../utils/supabase';
 import { pickLocalized } from '../utils/locale';
 import { fadeInUp, staggerContainer, fadeScale } from '../styles/animations';
 
@@ -88,6 +93,8 @@ const STATIC_FILTER_CATEGORIES = [
 
 export default function Projects() {
   const { t, i18n } = useTranslation();
+  const supabaseConfigError =
+    !useStaticProjects && !isSupabaseConfigured ? t('projects.supabase_not_configured') : '';
   const [filter, setFilter] = useState('ALL');
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
@@ -99,6 +106,11 @@ export default function Projects() {
 
   useEffect(() => {
     if (useStaticProjects) return;
+
+    if (!isSupabaseConfigured) {
+      setDataLoading(false);
+      return;
+    }
 
     let cancelled = false;
 
@@ -251,8 +263,8 @@ export default function Projects() {
       {!useStaticProjects && dataLoading && (
         <p className="text-slate-500 text-sm mb-8">Loading projects…</p>
       )}
-      {!useStaticProjects && loadError && (
-        <p className="text-red-600 text-sm mb-8">{loadError}</p>
+      {!useStaticProjects && (supabaseConfigError || loadError) && (
+        <p className="text-red-600 text-sm mb-8">{supabaseConfigError || loadError}</p>
       )}
 
       <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">

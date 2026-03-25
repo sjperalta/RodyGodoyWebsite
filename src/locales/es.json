@@ -34,7 +34,8 @@
     "filter_all": "TODOS",
     "filter_residential": "RESIDENCIAL",
     "filter_commercial": "COMERCIAL",
-    "filter_interior": "INTERIORISMO"
+    "filter_interior": "INTERIORISMO",
+    "supabase_not_configured": "Faltó la URL o la clave de Supabase al compilar el sitio. En GitHub Actions, define la variable del repositorio VITE_SUPABASE_URL y el secreto VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY en el paso Build, y vuelve a desplegar. O usa VITE_USE_STATIC_PROJECTS=true para usar el JSON incluido."
   },
   "philosophy": {
     "subtitle": "Filosofía",
