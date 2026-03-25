@@ -1,9 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+const rawUrl = import.meta.env.VITE_SUPABASE_URL;
+const rawKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
-export const supabase = createClient(supabaseUrl ?? '', supabaseKey ?? '');
+export const supabaseUrl = typeof rawUrl === 'string' ? rawUrl.trim() : '';
+export const supabaseAnonKey = typeof rawKey === 'string' ? rawKey.trim() : '';
+
+/** False when URL/key were missing at `vite build` (e.g. GitHub Actions secrets/vars not passed to the Build step). */
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+// createClient throws "supabaseUrl is required" if url is empty — use placeholders so the bundle loads;
+// real API calls are skipped when isSupabaseConfigured is false (see AuthContext, Projects).
+const clientUrl = isSupabaseConfigured ? supabaseUrl : 'https://placeholder.supabase.co';
+const clientKey = isSupabaseConfigured
+  ? supabaseAnonKey
+  : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.placeholder-not-configured';
+
+export const supabase = createClient(clientUrl, clientKey);
+
+if (import.meta.env.DEV && !isSupabaseConfigured) {
+  console.warn(
+    '[Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY. Set them in .env for local dev; in CI, pass them as env vars on the `vite build` step.'
+  );
+}
 
 export const STORAGE_BUCKETS = {
   images: 'project-images',
@@ -22,7 +41,7 @@ const useStorageImageTransforms = import.meta.env.VITE_SUPABASE_IMAGE_TRANSFORMS
  * @param {{ width: number, height?: number, resize?: 'cover' | 'contain' | 'fill' }} [transform] — used only if VITE_SUPABASE_IMAGE_TRANSFORMS=true
  */
 export function getProjectImagePublicUrl(objectPath, transform) {
-  if (!objectPath) return '';
+  if (!objectPath || !isSupabaseConfigured) return '';
   if (useStorageImageTransforms && transform) {
     const { data } = supabase.storage.from(STORAGE_BUCKETS.images).getPublicUrl(objectPath, {
       transform: {
@@ -38,7 +57,7 @@ export function getProjectImagePublicUrl(objectPath, transform) {
 }
 
 export function getProjectVideoPublicUrl(objectPath) {
-  if (!objectPath) return '';
+  if (!objectPath || !isSupabaseConfigured) return '';
   const { data } = supabase.storage.from(STORAGE_BUCKETS.files).getPublicUrl(objectPath);
   return data.publicUrl;
 }

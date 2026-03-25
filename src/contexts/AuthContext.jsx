@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { supabase } from '../utils/supabase';
+import { supabase, isSupabaseConfigured } from '../utils/supabase';
 import { AuthContext } from './authContext.js';
 
 export function AuthProvider({ children }) {
@@ -46,6 +46,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setSession(null);
+      setProfile(null);
+      setLoading(false);
+      return undefined;
+    }
+
     let cancelled = false;
 
     const syncSession = async (s) => {
@@ -77,6 +84,11 @@ export function AuthProvider({ children }) {
   }, [loadProfile]);
 
   const signIn = useCallback(async (email, password) => {
+    if (!isSupabaseConfigured) {
+      throw new Error(
+        'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY at build time.'
+      );
+    }
     const normalized = email.trim().toLowerCase();
     const { data, error } = await supabase.auth.signInWithPassword({
       email: normalized,
@@ -87,7 +99,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    if (isSupabaseConfigured) {
+      await supabase.auth.signOut();
+    }
     setProfile(null);
   }, []);
 

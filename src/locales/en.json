@@ -34,7 +34,8 @@
     "filter_all": "ALL",
     "filter_residential": "RESIDENTIAL",
     "filter_commercial": "COMMERCIAL",
-    "filter_interior": "INTERIOR DESIGN"
+    "filter_interior": "INTERIOR DESIGN",
+    "supabase_not_configured": "Supabase URL or key was missing when this site was built. In GitHub Actions, set repository Variable VITE_SUPABASE_URL and Secret VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY on the Build step, then redeploy. Or set VITE_USE_STATIC_PROJECTS=true to use bundled JSON."
   },
   "philosophy": {
     "subtitle": "Philosophy",
