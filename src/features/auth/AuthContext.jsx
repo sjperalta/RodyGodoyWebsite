@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { supabase, isSupabaseConfigured } from '../utils/supabase';
-import { AuthContext } from './authContext.js';
+import { isSupabaseConfigured } from '@/services/supabase/client';
+import { AuthContext } from '@/features/auth/authContext.js';
+import { authRepo } from '@/services/repos/authRepo';
+import { profilesRepo } from '@/services/repos/profilesRepo';
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
@@ -9,7 +11,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async (userId) => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured) {
       setProfile(null);
       return;
     }
@@ -17,36 +19,13 @@ export function AuthProvider({ children }) {
       setProfile(null);
       return;
     }
-    let { data, error } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', userId)
-      .maybeSingle();
-    if (error) {
-      console.error(error);
+    try {
+      const data = await profilesRepo.getOrCreateProfile(userId);
+      setProfile(data);
+    } catch (e) {
+      console.error(e);
       setProfile(null);
-      return;
     }
-    if (data == null) {
-      const { error: insErr } = await supabase.from('profiles').insert({ id: userId });
-      if (insErr && insErr.code !== '23505') {
-        console.error(insErr);
-        setProfile(null);
-        return;
-      }
-      const second = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', userId)
-        .maybeSingle();
-      if (second.error) {
-        console.error(second.error);
-        setProfile(null);
-        return;
-      }
-      data = second.data;
-    }
-    setProfile(data);
   }, []);
 
   useEffect(() => {
@@ -71,13 +50,11 @@ export function AuthProvider({ children }) {
       }
     };
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    authRepo.getSession().then((s) => {
       if (!cancelled) syncSession(s);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, s) => {
+    const subscription = authRepo.onAuthStateChange((s) => {
       syncSession(s);
     });
 
@@ -94,17 +71,12 @@ export function AuthProvider({ children }) {
       );
     }
     const normalized = email.trim().toLowerCase();
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: normalized,
-      password,
-    });
-    if (error) throw error;
-    return data;
+    return authRepo.signInWithPassword({ email: normalized, password });
   }, []);
 
   const signOut = useCallback(async () => {
     if (isSupabaseConfigured) {
-      await supabase.auth.signOut();
+      await authRepo.signOut();
     }
     setProfile(null);
   }, []);

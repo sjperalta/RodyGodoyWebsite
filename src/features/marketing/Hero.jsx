@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { fadeInUp, staggerContainer, imageZoom } from '../styles/animations';
+import { fadeInUp, staggerContainer, imageZoom } from '@/app/styles/animations';
 
 const Hero = () => {
   const { t } = useTranslation();

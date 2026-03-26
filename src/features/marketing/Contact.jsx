@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
-import { fadeInUp, staggerContainer } from '../styles/animations';
+import { fadeInUp, staggerContainer } from '@/app/styles/animations';
 
 const Contact = () => {
   const { t } = useTranslation();

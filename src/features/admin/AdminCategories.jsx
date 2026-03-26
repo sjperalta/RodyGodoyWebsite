@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { supabase, isSupabaseConfigured } from '../utils/supabase';
+import { isSupabaseConfigured } from '@/services/supabase/client';
+import { categoriesRepo } from '@/services/repos/categoriesRepo';
+import { useTranslation } from 'react-i18next';
 
 const emptyForm = () => ({
   filter_key: '',
@@ -9,6 +11,7 @@ const emptyForm = () => ({
 });
 
 export default function AdminCategories() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -17,24 +20,22 @@ export default function AdminCategories() {
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured) {
       setRows([]);
-      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      setError(t('projects.supabase_not_configured'));
       setLoading(false);
       return;
     }
     setError('');
-    const { data, error: qError } = await supabase
-      .from('project_categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-    if (qError) {
-      setError(qError.message);
-      return;
+    try {
+      const data = await categoriesRepo.listAll();
+      setRows(data || []);
+    } catch (e) {
+      setError(e.message || t('admin.categories_load_failed'));
+    } finally {
+      setLoading(false);
     }
-    setRows(data || []);
-    setLoading(false);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     load();
@@ -61,7 +62,7 @@ export default function AdminCategories() {
   };
 
   const save = async () => {
-    if (!isSupabaseConfigured || !supabase) return;
+    if (!isSupabaseConfigured) return;
     setSaving(true);
     setError('');
     const payload = {
@@ -73,47 +74,45 @@ export default function AdminCategories() {
 
     try {
       if (editingId === 'new') {
-        const { error: e } = await supabase.from('project_categories').insert(payload);
-        if (e) throw e;
+        await categoriesRepo.create(payload);
       } else {
-        const { error: e } = await supabase.from('project_categories').update(payload).eq('id', editingId);
-        if (e) throw e;
+        await categoriesRepo.update(editingId, payload);
       }
       cancelEdit();
       await load();
     } catch (e) {
-      setError(e.message || 'Save failed');
+      setError(e.message || t('admin.categories_save_failed'));
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async (id) => {
-    if (!isSupabaseConfigured || !supabase) return;
-    if (!confirm('Delete this category? Projects using it may be blocked by FK.')) return;
+    if (!isSupabaseConfigured) return;
+    if (!confirm(t('admin.categories_confirm_delete'))) return;
     setError('');
-    const { error: e } = await supabase.from('project_categories').delete().eq('id', id);
-    if (e) {
-      setError(e.message);
-      return;
+    try {
+      await categoriesRepo.deleteById(id);
+      await load();
+    } catch (e) {
+      setError(e.message || t('admin.categories_delete_failed'));
     }
-    await load();
   };
 
   if (loading) {
-    return <p className="text-slate-500 text-sm">Loading categories…</p>;
+    return <p className="text-slate-500 text-sm">{t('admin.categories_loading')}</p>;
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="font-serif text-3xl">Categories</h1>
+        <h1 className="font-serif text-3xl">{t('admin.categories_title')}</h1>
         <button
           type="button"
           onClick={startCreate}
           className="bg-bg-dark text-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-primary transition-colors"
         >
-          New category
+          {t('admin.categories_new')}
         </button>
       </div>
 
@@ -122,12 +121,12 @@ export default function AdminCategories() {
       {editingId && (
         <div className="border border-accent-line/40 bg-white p-6 mb-8 space-y-4">
           <h2 className="text-sm font-bold tracking-widest uppercase text-primary">
-            {editingId === 'new' ? 'New category' : 'Edit category'}
+            {editingId === 'new' ? t('admin.categories_new') : t('admin.categories_edit')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
-                Filter key (e.g. RESIDENTIAL)
+                {t('admin.categories_filter_key_label')}
               </label>
               <input
                 value={form.filter_key}
@@ -138,7 +137,7 @@ export default function AdminCategories() {
             </div>
             <div>
               <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
-                Sort order
+                {t('admin.categories_sort_order_label')}
               </label>
               <input
                 type="number"
@@ -149,7 +148,7 @@ export default function AdminCategories() {
             </div>
             <div>
               <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
-                Label (ES)
+                {t('admin.categories_label_es_label')}
               </label>
               <input
                 value={form.label_es}
@@ -159,7 +158,7 @@ export default function AdminCategories() {
             </div>
             <div>
               <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
-                Label (EN)
+                {t('admin.categories_label_en_label')}
               </label>
               <input
                 value={form.label_en}
@@ -175,10 +174,14 @@ export default function AdminCategories() {
               disabled={saving}
               className="bg-primary text-white px-4 py-2 text-xs font-bold tracking-widest uppercase disabled:opacity-50"
             >
-              Save
+              {t('admin.categories_save')}
             </button>
-            <button type="button" onClick={cancelEdit} className="text-xs font-bold tracking-widest uppercase text-slate-500">
-              Cancel
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="text-xs font-bold tracking-widest uppercase text-slate-500"
+            >
+              {t('admin.categories_cancel')}
             </button>
           </div>
         </div>
@@ -195,14 +198,24 @@ export default function AdminCategories() {
               <span className="text-slate-500 text-sm ml-3">
                 {row.label?.es} / {row.label?.en}
               </span>
-              <span className="text-slate-400 text-xs ml-3">order {row.sort_order}</span>
+              <span className="text-slate-400 text-xs ml-3">
+                {t('admin.categories_order_label', { order: row.sort_order })}
+              </span>
             </div>
             <div className="flex gap-3">
-              <button type="button" onClick={() => startEdit(row)} className="text-xs font-bold uppercase text-primary">
-                Edit
+              <button
+                type="button"
+                onClick={() => startEdit(row)}
+                className="text-xs font-bold uppercase text-primary"
+              >
+                {t('admin.categories_edit_button')}
               </button>
-              <button type="button" onClick={() => remove(row.id)} className="text-xs font-bold uppercase text-red-600">
-                Delete
+              <button
+                type="button"
+                onClick={() => remove(row.id)}
+                className="text-xs font-bold uppercase text-red-600"
+              >
+                {t('admin.categories_delete_button')}
               </button>
             </div>
           </li>

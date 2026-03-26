@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  supabase,
-  isSupabaseConfigured,
-  STORAGE_BUCKETS,
-  getProjectImagePublicUrl,
-  getProjectVideoPublicUrl,
-} from '../utils/supabase';
+import { isSupabaseConfigured, getProjectImagePublicUrl, getProjectVideoPublicUrl } from '@/services/supabase/client';
+import { categoriesRepo } from '@/services/repos/categoriesRepo';
+import { projectsRepo } from '@/services/repos/projectsRepo';
+import { projectMediaRepo } from '@/services/repos/projectMediaRepo';
+import { useTranslation } from 'react-i18next';
 
 const emptyForm = () => ({
   slug: '',
@@ -26,6 +24,7 @@ const emptyForm = () => ({
 
 export default function AdminProjectEdit() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isNew = id === 'new';
 
@@ -38,61 +37,56 @@ export default function AdminProjectEdit() {
   const [projectId, setProjectId] = useState(isNew ? null : id);
 
   const loadCategories = useCallback(async () => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured) {
       setCategories([]);
-      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      setError(t('projects.supabase_not_configured'));
       return;
     }
-    const { data } = await supabase.from('project_categories').select('id, filter_key').order('sort_order');
-    setCategories(data || []);
-  }, []);
+    try {
+      const data = await categoriesRepo.listIdAndFilterKey();
+      setCategories(data || []);
+    } catch (e) {
+      setError(e.message || t('admin.categories_load_failed'));
+      setCategories([]);
+    }
+  }, [t]);
 
   const loadProject = useCallback(async () => {
     if (isNew || !id) return;
-    if (!isSupabaseConfigured || !supabase) {
-      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+    if (!isSupabaseConfigured) {
+      setError(t('projects.supabase_not_configured'));
       setLoading(false);
       return;
     }
     setLoading(true);
     setError('');
-    const { data: proj, error: pErr } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (pErr) {
-      setError(pErr.message);
-      setLoading(false);
-      return;
-    }
-    setProjectId(proj.id);
-    setForm({
-      slug: proj.slug,
-      category_id: proj.category_id,
-      name_es: proj.name?.es ?? '',
-      name_en: proj.name?.en ?? '',
-      description_es: proj.description?.es ?? '',
-      description_en: proj.description?.en ?? '',
-      location_es: proj.location?.es ?? '',
-      location_en: proj.location?.en ?? '',
-      area_es: proj.area?.es ?? '',
-      area_en: proj.area?.en ?? '',
-      year: proj.year ?? '',
-      published: proj.published,
-      sort_order: proj.sort_order ?? 0,
-    });
-    setProjectId(proj.id);
+    try {
+      const proj = await projectsRepo.getById(id);
+      setProjectId(proj.id);
+      setForm({
+        slug: proj.slug,
+        category_id: proj.category_id,
+        name_es: proj.name?.es ?? '',
+        name_en: proj.name?.en ?? '',
+        description_es: proj.description?.es ?? '',
+        description_en: proj.description?.en ?? '',
+        location_es: proj.location?.es ?? '',
+        location_en: proj.location?.en ?? '',
+        area_es: proj.area?.es ?? '',
+        area_en: proj.area?.en ?? '',
+        year: proj.year ?? '',
+        published: proj.published,
+        sort_order: proj.sort_order ?? 0,
+      });
 
-    const { data: m, error: mErr } = await supabase
-      .from('project_media')
-      .select('*')
-      .eq('project_id', id)
-      .order('sort_order', { ascending: true });
-    if (mErr) setError(mErr.message);
-    else setMedia(m || []);
-    setLoading(false);
-  }, [id, isNew]);
+      const m = await projectMediaRepo.listByProjectId(id);
+      setMedia(m || []);
+    } catch (e) {
+      setError(e.message || t('admin.project_load_failed'));
+    } finally {
+      setLoading(false);
+    }
+  }, [id, isNew, t]);
 
   useEffect(() => {
     loadCategories();
@@ -110,8 +104,8 @@ export default function AdminProjectEdit() {
   }, [id, isNew, loadProject]);
 
   const saveProject = async () => {
-    if (!isSupabaseConfigured || !supabase) {
-      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+    if (!isSupabaseConfigured) {
+      setError(t('projects.supabase_not_configured'));
       return;
     }
     setSaving(true);
@@ -131,28 +125,26 @@ export default function AdminProjectEdit() {
 
     try {
       if (isNew || !projectId) {
-        const { data, error: insErr } = await supabase.from('projects').insert(payload).select('id').single();
-        if (insErr) throw insErr;
+        const data = await projectsRepo.create(payload);
         setProjectId(data.id);
         navigate(`/admin/projects/${data.id}`, { replace: true });
       } else {
-        const { error: upErr } = await supabase.from('projects').update(payload).eq('id', projectId);
-        if (upErr) throw upErr;
+        await projectsRepo.update(projectId, payload);
       }
     } catch (e) {
-      setError(e.message || 'Save failed');
+      setError(e.message || t('admin.project_save_failed'));
     } finally {
       setSaving(false);
     }
   };
 
   const uploadFiles = async (fileList) => {
-    if (!isSupabaseConfigured || !supabase) {
-      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+    if (!isSupabaseConfigured) {
+      setError(t('projects.supabase_not_configured'));
       return;
     }
     if (!projectId) {
-      setError('Save the project first, then upload media.');
+      setError(t('admin.project_save_first_upload_media'));
       return;
     }
     const files = Array.from(fileList);
@@ -161,27 +153,20 @@ export default function AdminProjectEdit() {
 
     for (const file of files) {
       const isVideo = file.type.startsWith('video/');
-      const bucket = isVideo ? STORAGE_BUCKETS.files : STORAGE_BUCKETS.images;
+      const kind = isVideo ? 'video' : 'image';
       const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
-      const path = `projects/${projectId}/${crypto.randomUUID()}.${ext}`;
+      const objectPath = `projects/${projectId}/${crypto.randomUUID()}.${ext}`;
 
-      const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-      if (upErr) {
-        setError(upErr.message);
-        return;
-      }
-
-      const { error: rowErr } = await supabase.from('project_media').insert({
-        project_id: projectId,
-        kind: isVideo ? 'video' : 'image',
-        object_path: path,
-        sort_order: nextOrder++,
-      });
-      if (rowErr) {
-        setError(rowErr.message);
+      try {
+        await projectMediaRepo.uploadAndCreateRow({
+          projectId,
+          file,
+          objectPath,
+          kind,
+          sortOrder: nextOrder++,
+        });
+      } catch (e) {
+        setError(e.message || t('admin.project_upload_failed'));
         return;
       }
     }
@@ -189,61 +174,71 @@ export default function AdminProjectEdit() {
   };
 
   const deleteMedia = async (row) => {
-    if (!isSupabaseConfigured || !supabase) return;
-    if (!confirm('Remove this file from the project?')) return;
-    const bucket = row.kind === 'video' ? STORAGE_BUCKETS.files : STORAGE_BUCKETS.images;
-    await supabase.storage.from(bucket).remove([row.object_path]);
-    const { error: delErr } = await supabase.from('project_media').delete().eq('id', row.id);
-    if (delErr) {
-      setError(delErr.message);
+    if (!isSupabaseConfigured) return;
+    if (!confirm(t('admin.project_media_confirm_remove'))) return;
+    try {
+      await projectMediaRepo.deleteRowAndStorage({
+        id: row.id,
+        objectPath: row.object_path,
+        kind: row.kind,
+      });
+    } catch (e) {
+      setError(e.message || t('admin.project_delete_failed'));
       return;
     }
     loadProject();
   };
 
   const moveMedia = async (index, direction) => {
-    if (!isSupabaseConfigured || !supabase) return;
+    if (!isSupabaseConfigured) return;
     const next = index + direction;
     if (next < 0 || next >= media.length) return;
     const a = media[index];
     const b = media[next];
-    const { error: e1 } = await supabase.from('project_media').update({ sort_order: b.sort_order }).eq('id', a.id);
-    const { error: e2 } = await supabase.from('project_media').update({ sort_order: a.sort_order }).eq('id', b.id);
-    if (e1 || e2) {
-      setError((e1 || e2).message);
+    try {
+      await projectMediaRepo.setSortOrder({ id: a.id, sortOrder: b.sort_order });
+      await projectMediaRepo.setSortOrder({ id: b.id, sortOrder: a.sort_order });
+    } catch (e) {
+      setError(e.message || t('admin.project_reorder_failed'));
       return;
     }
     loadProject();
   };
 
   if (loading) {
-    return <p className="text-slate-500 text-sm">Loading project…</p>;
+    return <p className="text-slate-500 text-sm">{t('admin.project_loading')}</p>;
   }
 
   return (
     <div>
-      <h1 className="font-serif text-3xl mb-8">{isNew ? 'New project' : 'Edit project'}</h1>
+      <h1 className="font-serif text-3xl mb-8">
+        {isNew ? t('admin.project_new_title') : t('admin.project_edit_title')}
+      </h1>
       {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
       <div className="border border-accent-line/40 bg-white p-6 mb-8 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Slug</label>
+            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
+              {t('admin.project_slug_label')}
+            </label>
             <input
               value={form.slug}
               onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
               className="w-full border border-accent-line/50 px-3 py-2 text-sm"
-              placeholder="my-project"
+              placeholder={t('admin.project_slug_placeholder')}
             />
           </div>
           <div>
-            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Category</label>
+            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
+              {t('admin.project_category_label')}
+            </label>
             <select
               value={form.category_id}
               onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}
               className="w-full border border-accent-line/50 px-3 py-2 text-sm"
             >
-              <option value="">Select…</option>
+              <option value="">{t('admin.project_category_select_placeholder')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.filter_key}
@@ -252,7 +247,9 @@ export default function AdminProjectEdit() {
             </select>
           </div>
           <div>
-            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Year</label>
+            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
+              {t('admin.project_year_label')}
+            </label>
             <input
               value={form.year}
               onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))}
@@ -260,7 +257,9 @@ export default function AdminProjectEdit() {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Sort order</label>
+            <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
+              {t('admin.project_sort_order_label')}
+            </label>
             <input
               type="number"
               value={form.sort_order}
@@ -276,49 +275,72 @@ export default function AdminProjectEdit() {
               onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
             />
             <label htmlFor="published" className="text-sm">
-              Published (visible on site)
+              {t('admin.project_published_label')}
             </label>
           </div>
         </div>
 
-        <h2 className="text-xs font-bold tracking-widest uppercase text-primary pt-4">Localized copy</h2>
+        <h2 className="text-xs font-bold tracking-widest uppercase text-primary pt-4">
+          {t('admin.project_localized_copy_title')}
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {['name', 'description', 'location', 'area'].map((field) => (
-            <div key={field} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              key: 'name',
+              esLabel: t('admin.project_localized_name_es'),
+              enLabel: t('admin.project_localized_name_en'),
+            },
+            {
+              key: 'description',
+              esLabel: t('admin.project_localized_description_es'),
+              enLabel: t('admin.project_localized_description_en'),
+            },
+            {
+              key: 'location',
+              esLabel: t('admin.project_localized_location_es'),
+              enLabel: t('admin.project_localized_location_en'),
+            },
+            {
+              key: 'area',
+              esLabel: t('admin.project_localized_area_es'),
+              enLabel: t('admin.project_localized_area_en'),
+            },
+          ].map(({ key, esLabel, enLabel }) => (
+            <div key={key} className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
-                  {field} (ES)
+                  {esLabel}
                 </label>
-                {field === 'description' ? (
+                {key === 'description' ? (
                   <textarea
-                    value={form[`${field}_es`]}
-                    onChange={(e) => setForm((f) => ({ ...f, [`${field}_es`]: e.target.value }))}
+                    value={form[`${key}_es`]}
+                    onChange={(e) => setForm((f) => ({ ...f, [`${key}_es`]: e.target.value }))}
                     rows={4}
                     className="w-full border border-accent-line/50 px-3 py-2 text-sm"
                   />
                 ) : (
                   <input
-                    value={form[`${field}_es`]}
-                    onChange={(e) => setForm((f) => ({ ...f, [`${field}_es`]: e.target.value }))}
+                    value={form[`${key}_es`]}
+                    onChange={(e) => setForm((f) => ({ ...f, [`${key}_es`]: e.target.value }))}
                     className="w-full border border-accent-line/50 px-3 py-2 text-sm"
                   />
                 )}
               </div>
               <div>
                 <label className="block text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">
-                  {field} (EN)
+                  {enLabel}
                 </label>
-                {field === 'description' ? (
+                {key === 'description' ? (
                   <textarea
-                    value={form[`${field}_en`]}
-                    onChange={(e) => setForm((f) => ({ ...f, [`${field}_en`]: e.target.value }))}
+                    value={form[`${key}_en`]}
+                    onChange={(e) => setForm((f) => ({ ...f, [`${key}_en`]: e.target.value }))}
                     rows={4}
                     className="w-full border border-accent-line/50 px-3 py-2 text-sm"
                   />
                 ) : (
                   <input
-                    value={form[`${field}_en`]}
-                    onChange={(e) => setForm((f) => ({ ...f, [`${field}_en`]: e.target.value }))}
+                    value={form[`${key}_en`]}
+                    onChange={(e) => setForm((f) => ({ ...f, [`${key}_en`]: e.target.value }))}
                     className="w-full border border-accent-line/50 px-3 py-2 text-sm"
                   />
                 )}
@@ -333,15 +355,21 @@ export default function AdminProjectEdit() {
           disabled={saving || !form.slug || !form.category_id}
           className="bg-bg-dark text-white px-4 py-2 text-xs font-bold tracking-widest uppercase hover:bg-primary disabled:opacity-50"
         >
-          {saving ? 'Saving…' : 'Save project'}
+          {saving ? t('admin.project_saving') : t('admin.project_save_button')}
         </button>
       </div>
 
       <div className="border border-accent-line/40 bg-white p-6">
-        <h2 className="text-sm font-bold tracking-widest uppercase text-primary mb-4">Media</h2>
+        <h2 className="text-sm font-bold tracking-widest uppercase text-primary mb-4">
+          {t('admin.project_media_title')}
+        </h2>
         <p className="text-slate-500 text-sm mb-4">
-          Images go to the <code className="bg-slate-100 px-1">project-images</code> bucket; videos to{' '}
-          <code className="bg-slate-100 px-1">files</code>. Paths must start with <code className="bg-slate-100 px-1">projects/</code>.
+          {t('admin.project_media_instructions_images_to')}{' '}
+          <code className="bg-slate-100 px-1">project-images</code>{' '}
+          {t('admin.project_media_instructions_videos_to')}{' '}
+          <code className="bg-slate-100 px-1">files</code>.{' '}
+          {t('admin.project_media_instructions_paths_must_start')}{' '}
+          <code className="bg-slate-100 px-1">projects/</code>.
         </p>
         <input
           type="file"
@@ -375,13 +403,13 @@ export default function AdminProjectEdit() {
               </div>
               <div className="flex flex-col gap-2">
                 <button type="button" className="text-xs uppercase text-primary" onClick={() => moveMedia(i, -1)}>
-                  Up
+                  {t('admin.project_media_move_up')}
                 </button>
                 <button type="button" className="text-xs uppercase text-primary" onClick={() => moveMedia(i, 1)}>
-                  Down
+                  {t('admin.project_media_move_down')}
                 </button>
                 <button type="button" className="text-xs uppercase text-red-600" onClick={() => deleteMedia(m)}>
-                  Delete
+                  {t('admin.project_media_delete')}
                 </button>
               </div>
             </li>

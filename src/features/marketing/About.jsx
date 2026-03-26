@@ -1,8 +1,8 @@
 // Removed React import
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { fadeInUp } from '../styles/animations';
-import architectPhoto from '../assets/architect.jpg';
+import { fadeInUp } from '@/app/styles/animations';
+import architectPhoto from '@/app/assets/architect.jpg';
 
 const About = () => {
   const { t } = useTranslation();

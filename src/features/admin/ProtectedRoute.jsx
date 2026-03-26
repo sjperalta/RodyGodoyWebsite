@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/features/auth/useAuth';
 
 export default function ProtectedRoute() {
   const { t } = useTranslation();

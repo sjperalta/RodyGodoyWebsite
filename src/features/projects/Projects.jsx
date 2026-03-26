@@ -1,16 +1,18 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Play, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import projectsData from '../data/projects_index.json';
+import { useQuery } from '@tanstack/react-query';
+import projectsData from '@/app/data/projects_index.json';
 import {
-  supabase,
   getProjectImagePublicUrl,
   getProjectVideoPublicUrl,
   isSupabaseConfigured,
-} from '../utils/supabase';
-import { pickLocalized } from '../utils/locale';
-import { fadeInUp, staggerContainer, fadeScale } from '../styles/animations';
+} from '@/services/supabase/client';
+import { pickLocalized } from '@/shared/lib/locale';
+import { categoriesRepo } from '@/services/repos/categoriesRepo';
+import { projectsRepo } from '@/services/repos/projectsRepo';
+import { fadeInUp, staggerContainer, fadeScale } from '@/app/styles/animations';
 
 const useStaticProjects = import.meta.env.VITE_USE_STATIC_PROJECTS === 'true';
 
@@ -99,60 +101,29 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
-  const [remoteProjects, setRemoteProjects] = useState(null);
-  const [remoteCategories, setRemoteCategories] = useState(null);
-  const [loadError, setLoadError] = useState('');
-  const [dataLoading, setDataLoading] = useState(!useStaticProjects);
+  const shouldFetchRemote = !useStaticProjects && isSupabaseConfigured;
 
-  useEffect(() => {
-    if (useStaticProjects) return;
+  const categoriesQuery = useQuery({
+    queryKey: ['project_categories'],
+    queryFn: () => categoriesRepo.listAll(),
+    enabled: shouldFetchRemote,
+  });
 
-    if (!isSupabaseConfigured) {
-      setDataLoading(false);
-      return;
-    }
+  const projectsQuery = useQuery({
+    queryKey: ['projects_published_with_media'],
+    queryFn: () => projectsRepo.listPublishedWithMedia(),
+    enabled: shouldFetchRemote,
+  });
 
-    let cancelled = false;
+  const remoteProjects = projectsQuery.data ?? null;
+  const remoteCategories = categoriesQuery.data ?? null;
 
-    (async () => {
-      setLoadError('');
-      const [catRes, projRes] = await Promise.all([
-        supabase.from('project_categories').select('*').order('sort_order', { ascending: true }),
-        supabase
-          .from('projects')
-          .select(
-            `
-            id, slug, name, description, location, area, year, sort_order,
-            project_categories!projects_category_id_fkey ( id, filter_key, label ),
-            project_media ( id, kind, object_path, sort_order )
-          `
-          )
-          .eq('published', true)
-          .order('sort_order', { ascending: true }),
-      ]);
+  const loadError =
+    !useStaticProjects && shouldFetchRemote
+      ? categoriesQuery.error?.message || projectsQuery.error?.message || ''
+      : '';
 
-      if (cancelled) return;
-
-      if (catRes.error) {
-        setLoadError(catRes.error.message);
-        setDataLoading(false);
-        return;
-      }
-      if (projRes.error) {
-        setLoadError(projRes.error.message);
-        setDataLoading(false);
-        return;
-      }
-
-      setRemoteCategories(catRes.data || []);
-      setRemoteProjects(projRes.data || []);
-      setDataLoading(false);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const dataLoading = shouldFetchRemote ? categoriesQuery.isLoading || projectsQuery.isLoading : false;
 
   const filterCategories = useMemo(() => {
     if (useStaticProjects) {

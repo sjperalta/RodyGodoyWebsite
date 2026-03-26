@@ -22,6 +22,14 @@ function githubPagesSpaFallback() {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), githubPagesSpaFallback()],
+  resolve: {
+    alias: {
+      '@/app': resolve(__dirname, 'src/app'),
+      '@/shared': resolve(__dirname, 'src/shared'),
+      '@/features': resolve(__dirname, 'src/features'),
+      '@/services': resolve(__dirname, 'src/services'),
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setupTests.js'],

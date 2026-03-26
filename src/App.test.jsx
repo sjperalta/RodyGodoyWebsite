@@ -3,45 +3,45 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
-vi.mock('./MarketingApp', () => ({
+vi.mock('@/features/marketing/MarketingApp', () => ({
   default: () => <div>MarketingApp</div>,
 }));
-vi.mock('./admin/AdminLogin', () => ({
+vi.mock('@/features/admin/AdminLogin', () => ({
   default: () => <div>AdminLogin</div>,
 }));
-vi.mock('./admin/AdminLayout', () => ({
+vi.mock('@/features/admin/AdminLayout', () => ({
   default: () => <div>AdminLayout</div>,
 }));
-vi.mock('./admin/ProtectedRoute', () => ({
+vi.mock('@/features/admin/ProtectedRoute', () => ({
   default: () => <div>ProtectedRoute</div>,
 }));
-vi.mock('./admin/AdminCategories', () => ({
+vi.mock('@/features/admin/AdminCategories', () => ({
   default: () => <div>AdminCategories</div>,
 }));
-vi.mock('./admin/AdminProjectsList', () => ({
+vi.mock('@/features/admin/AdminProjectsList', () => ({
   default: () => <div>AdminProjectsList</div>,
 }));
-vi.mock('./admin/AdminProjectEdit', () => ({
+vi.mock('@/features/admin/AdminProjectEdit', () => ({
   default: () => <div>AdminProjectEdit</div>,
 }));
 
 describe('App routing', () => {
-  it('renders marketing app for public routes', () => {
+  it('renders marketing app for public routes', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <App />
       </MemoryRouter>
     );
-    expect(screen.getByText('MarketingApp')).toBeInTheDocument();
+    expect(await screen.findByText('MarketingApp')).toBeInTheDocument();
   });
 
-  it('renders admin login for /admin/login', () => {
+  it('renders admin login for /admin/login', async () => {
     render(
       <MemoryRouter initialEntries={['/admin/login']}>
         <App />
       </MemoryRouter>
     );
-    expect(screen.getByText('AdminLogin')).toBeInTheDocument();
+    expect(await screen.findByText('AdminLogin')).toBeInTheDocument();
   });
 });
 

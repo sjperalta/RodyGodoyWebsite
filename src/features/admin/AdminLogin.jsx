@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/features/auth/useAuth';
 
 export default function AdminLogin() {
   const { t } = useTranslation();
@@ -44,7 +44,7 @@ export default function AdminLogin() {
     try {
       await signIn(email, password);
     } catch (err) {
-      setError(err.message || 'Sign in failed');
+      setError(err.message || t('admin.sign_in_failed'));
     } finally {
       setSubmitting(false);
     }
