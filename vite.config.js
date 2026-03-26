@@ -22,4 +22,9 @@ function githubPagesSpaFallback() {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), githubPagesSpaFallback()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setupTests.js'],
+    css: true,
+  },
 })
