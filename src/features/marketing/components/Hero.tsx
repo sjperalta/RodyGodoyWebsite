@@ -1,12 +1,40 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { fadeInUp, staggerContainer, imageZoom } from '@/app/styles/animations';
+import { isSupabaseConfigured, getSiteImagePublicUrl, getSiteVideoPublicUrl } from '@/services/supabase/client';
+import { pickLocalized } from '@/shared/lib';
+import { siteSettingsRepo, type SiteSettings } from '@/features/marketing/services/siteSettingsRepo';
 
 const Hero = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const titleText: string = "Rody Godoy";
+  const settingsQuery = useQuery<SiteSettings | null>({
+    queryKey: ['site_settings', 'global'],
+    queryFn: () => siteSettingsRepo.getGlobal(),
+    enabled: isSupabaseConfigured,
+    staleTime: 60_000,
+  });
+
+  const settings = settingsQuery.data ?? null;
+
+  const titleText: string = pickLocalized(settings?.hero_title ?? null, i18n.language) || 'Rody Godoy';
   const studioText: string = t('nav.studio').split(' ')[0];
+  const heroParagraph: string =
+    pickLocalized(settings?.hero_subtitle ?? null, i18n.language) ||
+    `${t('hero.tagline')}\n${t('hero.description')}`;
+  const primaryCtaLabel: string =
+    pickLocalized(settings?.hero_cta ?? null, i18n.language) || t('hero.cta_primary');
+
+  const fallbackVideoSrc = `${import.meta.env.BASE_URL}projects_assets/airbnb-refugio-perfecto.mp4`;
+  const backgroundType = settings?.hero_background_type;
+  const backgroundObjectPath = settings?.hero_background_object_path || '';
+  const backgroundVideoSrc =
+    backgroundType === 'video' && backgroundObjectPath ? getSiteVideoPublicUrl(backgroundObjectPath) : '';
+  const backgroundImageSrc =
+    backgroundType === 'image' && backgroundObjectPath
+      ? getSiteImagePublicUrl(backgroundObjectPath, { width: 2400, resize: 'cover' })
+      : '';
 
   return (
     <section className="relative h-screen min-h-[700px] w-full flex items-center overflow-hidden">
@@ -17,14 +45,18 @@ const Hero = () => {
         animate="animate"
         className="absolute inset-0 z-0"
       >
-        <video
-          src={`${import.meta.env.BASE_URL}projects_assets/airbnb-refugio-perfecto.mp4`}
-          className="w-full h-full object-cover grayscale opacity-50"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
+        {backgroundImageSrc ? (
+          <img src={backgroundImageSrc} alt="" className="w-full h-full object-cover grayscale opacity-50" />
+        ) : (
+          <video
+            src={backgroundVideoSrc || fallbackVideoSrc}
+            className="w-full h-full object-cover grayscale opacity-50"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-r from-bg-dark/60 to-transparent"></div>
       </motion.div>
 
@@ -72,8 +104,12 @@ const Hero = () => {
             variants={fadeInUp}
             className="text-neutral-soft text-lg md:text-2xl font-light leading-relaxed max-w-2xl mb-12"
           >
-            {t('hero.tagline')} <br />
-            {t('hero.description')}
+            {heroParagraph.split('\n').map((line, idx) => (
+              <span key={idx}>
+                {line}
+                <br />
+              </span>
+            ))}
           </motion.p>
           
           <motion.div 
@@ -84,7 +120,7 @@ const Hero = () => {
               href="#proyectos"
               className="px-8 py-4 bg-primary text-white text-sm font-bold tracking-widest uppercase hover:bg-primary/90 transition-all duration-300 relative group overflow-hidden"
             >
-              <span className="relative z-10">{t('hero.cta_primary')}</span>
+              <span className="relative z-10">{primaryCtaLabel}</span>
               <motion.div 
                 className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
               />

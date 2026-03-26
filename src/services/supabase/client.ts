@@ -60,3 +60,11 @@ export function getProjectVideoPublicUrl(objectPath: string): string {
   const { data } = supabase.storage.from(STORAGE_BUCKETS.files).getPublicUrl(objectPath);
   return data.publicUrl;
 }
+
+export function getSiteImagePublicUrl(objectPath: string, transform?: ImageTransform): string {
+  return getProjectImagePublicUrl(objectPath, transform);
+}
+
+export function getSiteVideoPublicUrl(objectPath: string): string {
+  return getProjectVideoPublicUrl(objectPath);
+}
