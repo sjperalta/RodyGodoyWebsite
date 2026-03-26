@@ -23,6 +23,9 @@ export function AdminLayout() {
             <NavLink to="/admin/categories" className={linkClass}>
               {t('admin.layout_nav_categories')}
             </NavLink>
+            <NavLink to="/admin/site" className={linkClass}>
+              {t('admin.layout_nav_site')}
+            </NavLink>
             <a href="/" className="text-xs font-bold tracking-widest uppercase text-slate-400 hover:text-primary">
               {t('admin.layout_view_site')}
             </a>

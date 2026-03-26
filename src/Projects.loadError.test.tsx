@@ -6,8 +6,8 @@ import { MarketingApp } from '@/features/marketing/components'; // Import the re
 import { ProjectCategory, Project } from '@/features/projects/services'; // For types
 
 const { mockCategoriesRepoListAll, mockProjectsRepoListPublishedWithMedia } = vi.hoisted(() => {
-  const listAll = vi.fn<[], Promise<ProjectCategory[]>>();
-  const listPublishedWithMedia = vi.fn<[], Promise<Project[]>>();
+  const listAll = vi.fn<() => Promise<ProjectCategory[]>>();
+  const listPublishedWithMedia = vi.fn<() => Promise<Project[]>>();
   return {
     mockCategoriesRepoListAll: listAll,
     mockProjectsRepoListPublishedWithMedia: listPublishedWithMedia,
@@ -23,8 +23,8 @@ vi.mock('@/features/projects/services', () => ({
   },
 }));
 
-vi.mock('@/services', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@/services')>();
+vi.mock('@/services/supabase/client', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@/services/supabase/client')>();
   return {
     ...original,
     isSupabaseConfigured: true,
@@ -111,9 +111,8 @@ describe('Projects (mocked repos)', () => {
         location: {en: 'Location EN', es: 'Location ES'},
         area: {en: 'Area EN', es: 'Area ES'},
         year: 2024,
-        published: true,
         sort_order: 1,
-        project_categories: { id: '1', filter_key: 'RESIDENTIAL', label: {en: 'Residential', es: 'Residencial'}, sort_order: 1 },
+        project_categories: { id: '1', filter_key: 'RESIDENTIAL', label: {en: 'Residential', es: 'Residencial'} },
         project_media: [{ id: '10', kind: 'image', object_path: 'media/my.jpg', sort_order: 1 }],
       },
     ];
