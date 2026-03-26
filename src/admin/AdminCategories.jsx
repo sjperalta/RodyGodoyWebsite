@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { supabase } from '../utils/supabase';
+import { supabase, isSupabaseConfigured } from '../utils/supabase';
 
 const emptyForm = () => ({
   filter_key: '',
@@ -17,6 +17,12 @@ export default function AdminCategories() {
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setRows([]);
+      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      setLoading(false);
+      return;
+    }
     setError('');
     const { data, error: qError } = await supabase
       .from('project_categories')
@@ -55,6 +61,7 @@ export default function AdminCategories() {
   };
 
   const save = async () => {
+    if (!isSupabaseConfigured || !supabase) return;
     setSaving(true);
     setError('');
     const payload = {
@@ -82,6 +89,7 @@ export default function AdminCategories() {
   };
 
   const remove = async (id) => {
+    if (!isSupabaseConfigured || !supabase) return;
     if (!confirm('Delete this category? Projects using it may be blocked by FK.')) return;
     setError('');
     const { error: e } = await supabase.from('project_categories').delete().eq('id', id);
