@@ -1,0 +1,1 @@
+export { default as projectsData } from './projects_index.json';

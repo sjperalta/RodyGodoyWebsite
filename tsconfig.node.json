@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowJs": true,
+    "lib": ["ES2022"],
+    "noEmit": false,
+    "types": ["node"]
+  },
+  "include": ["vite.config.js", "scripts/**.mjs", ".eslintrc.cjs", "tailwind.config.js"]
+}
