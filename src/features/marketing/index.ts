@@ -1,0 +1,9 @@
+export { default as About } from './About';
+export { default as Contact } from '././Contact';
+export { default as Footer } from './Footer';
+export { default as Hero } from './Hero';
+export { default as MarketingApp } from './MarketingApp';
+export { default as Navbar } from './Navbar';
+export { default as Philosophy } from './Philosophy';
+export { default as Process } from './Process';
+export { default as Services } from './Services';
