@@ -2,7 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
 import { useTranslation } from 'react-i18next';
 
-export default function AdminLayout() {
+export function AdminLayout() {
   const { signOut } = useAuth();
   const { t } = useTranslation();
 

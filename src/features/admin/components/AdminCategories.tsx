@@ -15,7 +15,7 @@ const emptyForm = (): CategoryForm => ({
   sort_order: 0,
 });
 
-export default function AdminCategories() {
+export function AdminCategories() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<ProjectCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

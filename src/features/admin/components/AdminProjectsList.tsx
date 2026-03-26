@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { isSupabaseConfigured } from '@/services/supabase/client';
 import { projectsRepo, type AdminProjectListItem } from '@/features/projects/services/projectsRepo';
 
-export default function AdminProjectsList() {
+export function AdminProjectsList() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<AdminProjectListItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

@@ -41,7 +41,7 @@ const emptyForm = (): ProjectForm => ({
   sort_order: 0,
 });
 
-export default function AdminProjectEdit() {
+export function AdminProjectEdit() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();

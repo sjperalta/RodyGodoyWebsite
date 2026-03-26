@@ -133,7 +133,7 @@ const STATIC_FILTER_CATEGORIES = [
   { key: 'INTERIOR DESIGN', labelKey: 'projects.filter_interior' },
 ];
 
-export default function Projects() {
+export function Projects() {
   const { t, i18n } = useTranslation();
   const supabaseConfigError: string =
     !useStaticProjects && !isSupabaseConfigured ? t('projects.supabase_not_configured') : '';

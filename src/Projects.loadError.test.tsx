@@ -2,7 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { MarketingApp } from '@/features/marketing'; // Import the real MarketingApp component
+import { MarketingApp } from '@/features/marketing/components'; // Import the real MarketingApp component
 import { ProjectCategory, Project } from '@/features/projects/services'; // For types
 
 const { mockCategoriesRepoListAll, mockProjectsRepoListPublishedWithMedia } = vi.hoisted(() => {

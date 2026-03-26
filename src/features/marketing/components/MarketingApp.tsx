@@ -53,7 +53,7 @@ const CustomCursor = () => {
   );
 };
 
-export default function MarketingApp() {
+export function MarketingApp() {
   const { i18n } = useTranslation();
 
   useEffect(() => {

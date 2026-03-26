@@ -1,8 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { MarketingApp } from '@/features/marketing';
 
-const AdminRoutesLazy = lazy(() => import('@/features/admin/routes'));
+import AdminRoutesLazy from '@/features/admin/routes';
 
 const AdminFallback = (
   <div className="flex justify-center items-center min-h-screen text-slate-500 text-sm">

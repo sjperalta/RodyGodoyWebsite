@@ -1,12 +1,10 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom'; // Import Routes
 
-const AdminLogin = lazy(() => import('./AdminLogin'));
-const AdminLayout = lazy(() => import('./AdminLayout'));
-const ProtectedRoute = lazy(() => import('./ProtectedRoute'));
-const AdminCategories = lazy(() => import('./AdminCategories'));
-const AdminProjectsList = lazy(() => import('./AdminProjectsList'));
-const AdminProjectEdit = lazy(() => import('./AdminProjectEdit'));
+import { AdminLogin } from '@/features/admin/components/AdminLogin';
+import { AdminLayout } from '@/features/admin/components/AdminLayout';
+import ProtectedRoute from '@/features/admin/guards/ProtectedRoute';
+import { AdminCategories, AdminProjectEdit, AdminProjectsList } from '@/features/admin/components';
 
 const suspenseFallback: ReactNode = (
   <div className="flex justify-center items-center min-h-screen text-slate-500 text-sm">

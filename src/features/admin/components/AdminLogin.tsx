@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth';
 
-export default function AdminLogin() {
+export function AdminLogin() {
   const { t } = useTranslation();
   const { session, loading, isAdmin, signIn, signOut } = useAuth();
   const location = useLocation();
