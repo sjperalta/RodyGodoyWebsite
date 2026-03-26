@@ -1,14 +1,16 @@
-# GitHub Actions: Settings → Secrets and variables → Actions
+# GitHub Actions — Secrets and variables
 #
-# Secrets (recommended for the publishable/anon key):
-#   VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+# If you store values on the "github-pages" Environment (Settings → Environments →
+# github-pages), the *build* job must use that environment too, or vars/secrets are
+# empty at `npm run build` (only the deploy job would see them otherwise).
 #
-# Variables (repository or environment: github-pages):
-#   VITE_SUPABASE_URL                 e.g. https://YOUR_REF.supabase.co
+# Required for Supabase remote mode (either repo-level OR github-pages environment):
+#   Secret:  VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+#   Variable: VITE_SUPABASE_URL   e.g. https://YOUR_REF.supabase.co
 #
 # Optional variables:
-#   VITE_USE_STATIC_PROJECTS          set to "true" to use src/data/projects_index.json (no Supabase)
-#   VITE_SUPABASE_IMAGE_TRANSFORMS    set to "true" only on Supabase Pro+ (Storage image resize)
+#   VITE_USE_STATIC_PROJECTS       "true" → bundled JSON, no Supabase
+#   VITE_SUPABASE_IMAGE_TRANSFORMS "true" only on Supabase Pro+ (Storage transforms)
 
 name: Deploy React App to GitHub Pages
 
@@ -32,6 +34,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
