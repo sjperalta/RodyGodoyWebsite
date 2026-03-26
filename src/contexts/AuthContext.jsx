@@ -9,6 +9,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = useCallback(async (userId) => {
+    if (!isSupabaseConfigured || !supabase) {
+      setProfile(null);
+      return;
+    }
     if (!userId) {
       setProfile(null);
       return;

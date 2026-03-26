@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../utils/supabase';
+import { supabase, isSupabaseConfigured } from '../utils/supabase';
 
 export default function AdminProjectsList() {
   const [rows, setRows] = useState([]);
@@ -8,6 +8,12 @@ export default function AdminProjectsList() {
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setRows([]);
+      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      setLoading(false);
+      return;
+    }
     setError('');
     const { data, error: err } = await supabase
       .from('projects')
@@ -26,6 +32,7 @@ export default function AdminProjectsList() {
   }, [load]);
 
   const togglePublished = async (id, published) => {
+    if (!isSupabaseConfigured || !supabase) return;
     const { error: err } = await supabase.from('projects').update({ published: !published }).eq('id', id);
     if (err) {
       setError(err.message);
@@ -35,6 +42,7 @@ export default function AdminProjectsList() {
   };
 
   const remove = async (id) => {
+    if (!isSupabaseConfigured || !supabase) return;
     if (!confirm('Delete this project and all its media?')) return;
     const { error: err } = await supabase.from('projects').delete().eq('id', id);
     if (err) {

@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { supabase, STORAGE_BUCKETS, getProjectImagePublicUrl, getProjectVideoPublicUrl } from '../utils/supabase';
+import {
+  supabase,
+  isSupabaseConfigured,
+  STORAGE_BUCKETS,
+  getProjectImagePublicUrl,
+  getProjectVideoPublicUrl,
+} from '../utils/supabase';
 
 const emptyForm = () => ({
   slug: '',
@@ -32,12 +38,22 @@ export default function AdminProjectEdit() {
   const [projectId, setProjectId] = useState(isNew ? null : id);
 
   const loadCategories = useCallback(async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setCategories([]);
+      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      return;
+    }
     const { data } = await supabase.from('project_categories').select('id, filter_key').order('sort_order');
     setCategories(data || []);
   }, []);
 
   const loadProject = useCallback(async () => {
     if (isNew || !id) return;
+    if (!isSupabaseConfigured || !supabase) {
+      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     const { data: proj, error: pErr } = await supabase
@@ -94,6 +110,10 @@ export default function AdminProjectEdit() {
   }, [id, isNew, loadProject]);
 
   const saveProject = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      return;
+    }
     setSaving(true);
     setError('');
     const payload = {
@@ -127,6 +147,10 @@ export default function AdminProjectEdit() {
   };
 
   const uploadFiles = async (fileList) => {
+    if (!isSupabaseConfigured || !supabase) {
+      setError('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
+      return;
+    }
     if (!projectId) {
       setError('Save the project first, then upload media.');
       return;
@@ -165,6 +189,7 @@ export default function AdminProjectEdit() {
   };
 
   const deleteMedia = async (row) => {
+    if (!isSupabaseConfigured || !supabase) return;
     if (!confirm('Remove this file from the project?')) return;
     const bucket = row.kind === 'video' ? STORAGE_BUCKETS.files : STORAGE_BUCKETS.images;
     await supabase.storage.from(bucket).remove([row.object_path]);
@@ -177,6 +202,7 @@ export default function AdminProjectEdit() {
   };
 
   const moveMedia = async (index, direction) => {
+    if (!isSupabaseConfigured || !supabase) return;
     const next = index + direction;
     if (next < 0 || next >= media.length) return;
     const a = media[index];

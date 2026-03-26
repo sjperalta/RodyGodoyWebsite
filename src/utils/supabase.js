@@ -9,14 +9,7 @@ export const supabaseAnonKey = typeof rawKey === 'string' ? rawKey.trim() : '';
 /** False when URL/key were missing at `vite build` (e.g. GitHub Actions secrets/vars not passed to the Build step). */
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
-// createClient throws "supabaseUrl is required" if url is empty — use placeholders so the bundle loads;
-// real API calls are skipped when isSupabaseConfigured is false (see AuthContext, Projects).
-const clientUrl = isSupabaseConfigured ? supabaseUrl : 'https://placeholder.supabase.co';
-const clientKey = isSupabaseConfigured
-  ? supabaseAnonKey
-  : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.placeholder-not-configured';
-
-export const supabase = createClient(clientUrl, clientKey);
+export const supabase = isSupabaseConfigured ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 if (import.meta.env.DEV && !isSupabaseConfigured) {
   console.warn(
