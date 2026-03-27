@@ -15,8 +15,8 @@ const suspenseFallback: ReactNode = (
 const AdminRoutesComponent = (): ReactNode => {
   return (
     <Routes> {/* Wrap with Routes */}
-      <Route path="/" element={<Suspense fallback={suspenseFallback}><AdminLayout /></Suspense>}>
-        <Route path="/login" element={<AdminLogin />} />
+      <Route element={<Suspense fallback={suspenseFallback}><AdminLayout /></Suspense>}>
+        <Route path="login" element={<AdminLogin />} />
         <Route element={<ProtectedRoute />}>
           <Route index element={<AdminProjectsList />} />
           <Route path="site" element={<AdminSiteSettings />} />
