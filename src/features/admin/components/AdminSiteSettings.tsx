@@ -56,19 +56,23 @@ export function AdminSiteSettings() {
     return bgType === 'image' ? getSiteImagePublicUrl(objectPath, { width: 1600, resize: 'cover' }) : getSiteVideoPublicUrl(objectPath);
   }, [bgType, objectPath]);
 
+  const buildPayload = (
+    overrides?: Partial<{ hero_background_type: BackgroundType; hero_background_object_path: string }>
+  ) => ({
+    hero_title: { en: heroTitle.en?.trim() ?? '', es: heroTitle.es?.trim() ?? '' },
+    hero_subtitle: { en: heroSubtitle.en?.trim() ?? '', es: heroSubtitle.es?.trim() ?? '' },
+    hero_cta: { en: heroCta.en?.trim() ?? '', es: heroCta.es?.trim() ?? '' },
+    hero_background_type: overrides?.hero_background_type ?? bgType,
+    hero_background_object_path: (overrides?.hero_background_object_path ?? objectPath).trim(),
+  });
+
   const save = async () => {
     if (!isSupabaseConfigured) return;
     setError('');
     setSuccess('');
     setSaving(true);
     try {
-      await siteSettingsRepo.upsertGlobal({
-        hero_title: { en: heroTitle.en?.trim() ?? '', es: heroTitle.es?.trim() ?? '' },
-        hero_subtitle: { en: heroSubtitle.en?.trim() ?? '', es: heroSubtitle.es?.trim() ?? '' },
-        hero_cta: { en: heroCta.en?.trim() ?? '', es: heroCta.es?.trim() ?? '' },
-        hero_background_type: bgType,
-        hero_background_object_path: objectPath.trim(),
-      });
+      await siteSettingsRepo.upsertGlobal(buildPayload());
       setSuccess(t('admin.site_settings_saved'));
       await settingsQuery.refetch();
     } catch (e: unknown) {
@@ -89,13 +93,23 @@ export function AdminSiteSettings() {
       const bucket = kind === 'image' ? STORAGE_BUCKETS.images : STORAGE_BUCKETS.files;
       const ext = extFromFilename(file.name, isVideo ? 'mp4' : 'jpg');
       const path = `site/hero/${crypto.randomUUID()}.${ext}`;
+      const contentType =
+        file.type ||
+        (isVideo ? 'video/mp4' : ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg');
 
-      const { error: uploadError } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage.from(bucket).upload(path, file, {
+        upsert: true,
+        contentType,
+      });
       if (uploadError) throw uploadError;
 
       setBgType(kind);
       setObjectPath(path);
+      await siteSettingsRepo.upsertGlobal(
+        buildPayload({ hero_background_type: kind, hero_background_object_path: path })
+      );
       setSuccess(t('admin.site_settings_upload_ok'));
+      await settingsQuery.refetch();
     } catch (e: unknown) {
       setError((e as Error)?.message || t('admin.site_settings_upload_failed'));
     } finally {

@@ -8,6 +8,12 @@
 #   Secret:  VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 #   Variable: VITE_SUPABASE_URL   e.g. https://YOUR_REF.supabase.co
 #
+# Required for automated DB migrations (migrate job, before build):
+#   Secret:  SUPABASE_ACCESS_TOKEN   Personal access token (Dashboard → Account → Access Tokens)
+#   Secret:  SUPABASE_DB_PASSWORD   Database password (Project Settings → Database), not the anon key
+#   Migrations apply SQL only; they do not upload Storage objects. Seed paths must exist in buckets
+#   or the app will fall back to bundled/static assets where implemented.
+#
 # Optional variables:
 #   VITE_USE_STATIC_PROJECTS       "true" → bundled JSON, no Supabase
 #   VITE_SUPABASE_IMAGE_TRANSFORMS "true" only on Supabase Pro+ (Storage transforms)
@@ -32,7 +38,42 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Apply Supabase migrations
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+        run: |
+          set -euo pipefail
+          URL="${VITE_SUPABASE_URL:-}"
+          if [ -z "$URL" ]; then
+            echo "VITE_SUPABASE_URL is not set; cannot derive project ref."
+            exit 1
+          fi
+          PROJECT_REF="$(echo "$URL" | sed -E 's|^https?://([^.]+)\.supabase\.co/?.*|\1|')"
+          if [ -z "$PROJECT_REF" ] || [ "$PROJECT_REF" = "$URL" ]; then
+            echo "Could not parse project ref from VITE_SUPABASE_URL (expected https://<ref>.supabase.co): $URL"
+            exit 1
+          fi
+          echo "Linking Supabase project ref: $PROJECT_REF"
+          supabase link --project-ref "$PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          supabase db push --yes
+
   build:
+    needs: migrate
     runs-on: ubuntu-latest
     environment:
       name: github-pages

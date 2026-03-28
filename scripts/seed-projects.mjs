@@ -1,12 +1,12 @@
 /**
- * One-time import of src/data/projects_index.json + public/projects_assets into Supabase.
+ * One-time import of src/app/data/projects_index.json + public/projects_assets into Supabase.
  *
  * Requires:
  *   SUPABASE_URL
  *   SUPABASE_SERVICE_ROLE_KEY  (never expose in the browser; local/CI only)
  *
- * Run from repo root (reads `.env` automatically):
- *   node scripts/seed-projects.mjs
+ * Run from repo root (loads `.env` then `.env.development`, later overrides):
+ *   npm run seed
  *
  * Prerequisite: apply supabase/migrations/20250325120000_projects_schema_storage.sql in the Supabase SQL Editor (or `supabase db push`).
  *
@@ -21,27 +21,38 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
-/** Load project root `.env` into process.env (Node does not read .env by default). */
+/** Load project root env files into process.env (Node does not read .env by default). */
 function loadDotEnv() {
-  const envPath = join(root, '.env');
-  if (!existsSync(envPath)) return;
-  const text = readFileSync(envPath, 'utf8');
-  for (const line of text.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const eq = trimmed.indexOf('=');
-    if (eq === -1) continue;
-    const key = trimmed.slice(0, eq).trim();
-    let val = trimmed.slice(eq + 1).trim();
-    if (
-      (val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))
-    ) {
-      val = val.slice(1, -1);
-    }
-    if (process.env[key] === undefined) {
+  const names = ['.env', '.env.development'];
+  for (const name of names) {
+    const envPath = join(root, name);
+    if (!existsSync(envPath)) continue;
+    const text = readFileSync(envPath, 'utf8');
+    for (const line of text.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eq = trimmed.indexOf('=');
+      if (eq === -1) continue;
+      const key = trimmed.slice(0, eq).trim();
+      let val = trimmed.slice(eq + 1).trim();
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
       process.env[key] = val;
     }
+  }
+}
+
+function isLocalSupabaseUrl(u) {
+  if (!u) return false;
+  try {
+    const { hostname } = new URL(u);
+    return hostname === '127.0.0.1' || hostname === 'localhost';
+  } catch {
+    return false;
   }
 }
 
@@ -53,8 +64,9 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUP
 if (!url || !serviceKey) {
   console.error(
     'Missing env: SUPABASE_URL (or VITE_SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY (or VITE_SUPABASE_SERVICE_ROLE_KEY).\n' +
-      'Add them to .env in the project root (the script loads .env automatically), or export them in your shell.\n' +
-      'Get the service role key from Supabase Dashboard → Project Settings → API (never commit it or expose it in the browser).'
+      'Add them to `.env` or `.env.development`, or export them in your shell.\n' +
+      'Remote: service role from Supabase Dashboard → Project Settings → API (never commit it or expose it in the browser).\n' +
+      'Local: run `supabase status` and use the Secret key for SUPABASE_SERVICE_ROLE_KEY.'
   );
   process.exit(1);
 }
@@ -73,14 +85,16 @@ function jwtPayload(token) {
   }
 }
 
-const jwt = jwtPayload(serviceKey);
-if (!jwt || jwt.role !== 'service_role') {
-  console.error(
-    'SUPABASE_SERVICE_ROLE_KEY must be the long "service_role" secret from Supabase → Project Settings → API.\n' +
-      'The anon / "publishable" / default key has role "anon" and cannot bypass RLS (inserts will fail with 42501).\n' +
-      `Decoded JWT role from your key: ${jwt?.role ?? 'invalid token'}`
-  );
-  process.exit(1);
+if (!isLocalSupabaseUrl(url)) {
+  const jwt = jwtPayload(serviceKey);
+  if (!jwt || jwt.role !== 'service_role') {
+    console.error(
+      'SUPABASE_SERVICE_ROLE_KEY must be the long "service_role" secret from Supabase → Project Settings → API.\n' +
+        'The anon / "publishable" / default key has role "anon" and cannot bypass RLS (inserts will fail with 42501).\n' +
+        `Decoded JWT role from your key: ${jwt?.role ?? 'invalid token'}`
+    );
+    process.exit(1);
+  }
 }
 
 const supabase = createClient(url, serviceKey, {
@@ -94,7 +108,7 @@ const CATEGORY_FROM_EN = {
 };
 
 const projectsJson = JSON.parse(
-  readFileSync(join(root, 'src', 'data', 'projects_index.json'), 'utf8')
+  readFileSync(join(root, 'src', 'app', 'data', 'projects_index.json'), 'utf8')
 );
 
 // Seed can read assets from `public/` (preferred) or `dist/` (some repos keep

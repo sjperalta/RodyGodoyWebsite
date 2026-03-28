@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -36,6 +37,22 @@ const Hero = () => {
       ? getSiteImagePublicUrl(backgroundObjectPath, { width: 2400, resize: 'cover' })
       : '';
 
+  const [storageVideoFailed, setStorageVideoFailed] = useState(false);
+  const [storageImageFailed, setStorageImageFailed] = useState(false);
+  useEffect(() => {
+    setStorageVideoFailed(false);
+    setStorageImageFailed(false);
+  }, [backgroundVideoSrc, backgroundImageSrc]);
+
+  const heroVideoSrc =
+    backgroundImageSrc && !storageImageFailed
+      ? ''
+      : backgroundVideoSrc && !storageVideoFailed
+        ? backgroundVideoSrc
+        : fallbackVideoSrc;
+
+  const showImageBg = Boolean(backgroundImageSrc && !storageImageFailed);
+
   return (
     <section className="relative h-screen min-h-[700px] w-full flex items-center overflow-hidden">
       {/* Background Image with Overlay */}
@@ -45,16 +62,27 @@ const Hero = () => {
         animate="animate"
         className="absolute inset-0 z-0"
       >
-        {backgroundImageSrc ? (
-          <img src={backgroundImageSrc} alt="" className="w-full h-full object-cover grayscale opacity-50" />
+        {showImageBg ? (
+          <img
+            src={backgroundImageSrc}
+            alt=""
+            className="w-full h-full object-cover grayscale opacity-50"
+            onError={() => {
+              if (backgroundImageSrc) setStorageImageFailed(true);
+            }}
+          />
         ) : (
           <video
-            src={backgroundVideoSrc || fallbackVideoSrc}
+            key={heroVideoSrc}
+            src={heroVideoSrc}
             className="w-full h-full object-cover grayscale opacity-50"
             autoPlay
             loop
             muted
             playsInline
+            onError={() => {
+              if (backgroundVideoSrc) setStorageVideoFailed(true);
+            }}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-bg-dark/60 to-transparent"></div>
