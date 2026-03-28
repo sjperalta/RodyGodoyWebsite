@@ -15,18 +15,21 @@ create table if not exists public.site_settings (
 
 alter table public.site_settings enable row level security;
 
+drop policy if exists "site_settings_select_all" on public.site_settings;
 create policy "site_settings_select_all"
   on public.site_settings
   for select
   to anon, authenticated
   using (true);
 
+drop policy if exists "site_settings_insert_admin" on public.site_settings;
 create policy "site_settings_insert_admin"
   on public.site_settings
   for insert
   to authenticated
   with check (public.is_admin());
 
+drop policy if exists "site_settings_update_admin" on public.site_settings;
 create policy "site_settings_update_admin"
   on public.site_settings
   for update
@@ -34,6 +37,7 @@ create policy "site_settings_update_admin"
   using (public.is_admin())
   with check (public.is_admin());
 
+drop policy if exists "site_settings_delete_admin" on public.site_settings;
 create policy "site_settings_delete_admin"
   on public.site_settings
   for delete
@@ -51,6 +55,13 @@ grant insert, update, delete on table public.site_settings to authenticated;
 -- Storage policies for site assets under site/
 -- Reuse existing buckets: project-images (images) and files (videos).
 -- ---------------------------------------------------------------------------
+
+drop policy if exists "storage_project_images_admin_insert_site" on storage.objects;
+drop policy if exists "storage_project_images_admin_update_site" on storage.objects;
+drop policy if exists "storage_project_images_admin_delete_site" on storage.objects;
+drop policy if exists "storage_files_admin_insert_site" on storage.objects;
+drop policy if exists "storage_files_admin_update_site" on storage.objects;
+drop policy if exists "storage_files_admin_delete_site" on storage.objects;
 
 create policy "storage_project_images_admin_insert_site"
   on storage.objects
