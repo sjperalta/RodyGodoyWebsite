@@ -4,7 +4,7 @@ create extension if not exists "pgcrypto";
 -- ---------------------------------------------------------------------------
 -- Profiles (admin flag; is_admin only promotable via service role / SQL)
 -- ---------------------------------------------------------------------------
-create table public.profiles (
+create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   is_admin boolean not null default false,
   created_at timestamptz not null default now()
@@ -12,6 +12,7 @@ create table public.profiles (
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"
   on public.profiles
   for select
@@ -51,6 +52,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row
@@ -59,7 +61,7 @@ create trigger on_auth_user_created
 -- ---------------------------------------------------------------------------
 -- Project categories
 -- ---------------------------------------------------------------------------
-create table public.project_categories (
+create table if not exists public.project_categories (
   id uuid primary key default gen_random_uuid(),
   filter_key text not null unique,
   label jsonb not null default '{}'::jsonb,
@@ -68,22 +70,25 @@ create table public.project_categories (
   updated_at timestamptz not null default now()
 );
 
-create index project_categories_sort_order_idx on public.project_categories (sort_order);
+create index if not exists project_categories_sort_order_idx on public.project_categories (sort_order);
 
 alter table public.project_categories enable row level security;
 
+drop policy if exists "project_categories_select_all" on public.project_categories;
 create policy "project_categories_select_all"
   on public.project_categories
   for select
   to anon, authenticated
   using (true);
 
+drop policy if exists "project_categories_insert_admin" on public.project_categories;
 create policy "project_categories_insert_admin"
   on public.project_categories
   for insert
   to authenticated
   with check (public.is_admin());
 
+drop policy if exists "project_categories_update_admin" on public.project_categories;
 create policy "project_categories_update_admin"
   on public.project_categories
   for update
@@ -91,6 +96,7 @@ create policy "project_categories_update_admin"
   using (public.is_admin())
   with check (public.is_admin());
 
+drop policy if exists "project_categories_delete_admin" on public.project_categories;
 create policy "project_categories_delete_admin"
   on public.project_categories
   for delete
@@ -100,7 +106,7 @@ create policy "project_categories_delete_admin"
 -- ---------------------------------------------------------------------------
 -- Projects
 -- ---------------------------------------------------------------------------
-create table public.projects (
+create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   category_id uuid not null references public.project_categories (id) on delete restrict,
@@ -115,29 +121,33 @@ create table public.projects (
   updated_at timestamptz not null default now()
 );
 
-create index projects_category_id_idx on public.projects (category_id);
-create index projects_published_sort_idx on public.projects (published, sort_order);
+create index if not exists projects_category_id_idx on public.projects (category_id);
+create index if not exists projects_published_sort_idx on public.projects (published, sort_order);
 
 alter table public.projects enable row level security;
 
+drop policy if exists "projects_select_published" on public.projects;
 create policy "projects_select_published"
   on public.projects
   for select
   to anon, authenticated
   using (published = true);
 
+drop policy if exists "projects_select_admin" on public.projects;
 create policy "projects_select_admin"
   on public.projects
   for select
   to authenticated
   using (public.is_admin());
 
+drop policy if exists "projects_insert_admin" on public.projects;
 create policy "projects_insert_admin"
   on public.projects
   for insert
   to authenticated
   with check (public.is_admin());
 
+drop policy if exists "projects_update_admin" on public.projects;
 create policy "projects_update_admin"
   on public.projects
   for update
@@ -145,6 +155,7 @@ create policy "projects_update_admin"
   using (public.is_admin())
   with check (public.is_admin());
 
+drop policy if exists "projects_delete_admin" on public.projects;
 create policy "projects_delete_admin"
   on public.projects
   for delete
@@ -154,7 +165,7 @@ create policy "projects_delete_admin"
 -- ---------------------------------------------------------------------------
 -- Project media (images in project-images bucket, video in files bucket)
 -- ---------------------------------------------------------------------------
-create table public.project_media (
+create table if not exists public.project_media (
   id uuid primary key default gen_random_uuid(),
   project_id uuid not null references public.projects (id) on delete cascade,
   kind text not null check (kind in ('image', 'video')),
@@ -163,11 +174,12 @@ create table public.project_media (
   created_at timestamptz not null default now()
 );
 
-create index project_media_project_id_idx on public.project_media (project_id);
-create index project_media_project_sort_idx on public.project_media (project_id, sort_order);
+create index if not exists project_media_project_id_idx on public.project_media (project_id);
+create index if not exists project_media_project_sort_idx on public.project_media (project_id, sort_order);
 
 alter table public.project_media enable row level security;
 
+drop policy if exists "project_media_select_published" on public.project_media;
 create policy "project_media_select_published"
   on public.project_media
   for select
@@ -181,18 +193,21 @@ create policy "project_media_select_published"
     )
   );
 
+drop policy if exists "project_media_select_admin" on public.project_media;
 create policy "project_media_select_admin"
   on public.project_media
   for select
   to authenticated
   using (public.is_admin());
 
+drop policy if exists "project_media_insert_admin" on public.project_media;
 create policy "project_media_insert_admin"
   on public.project_media
   for insert
   to authenticated
   with check (public.is_admin());
 
+drop policy if exists "project_media_update_admin" on public.project_media;
 create policy "project_media_update_admin"
   on public.project_media
   for update
@@ -200,6 +215,7 @@ create policy "project_media_update_admin"
   using (public.is_admin())
   with check (public.is_admin());
 
+drop policy if exists "project_media_delete_admin" on public.project_media;
 create policy "project_media_delete_admin"
   on public.project_media
   for delete
@@ -226,6 +242,16 @@ values
     array['video/mp4', 'video/webm', 'video/quicktime']::text[]
   )
 on conflict (id) do nothing;
+
+-- Storage policies (drop first so re-push succeeds if objects already existed)
+drop policy if exists "storage_project_images_public_read" on storage.objects;
+drop policy if exists "storage_files_public_read" on storage.objects;
+drop policy if exists "storage_project_images_admin_insert" on storage.objects;
+drop policy if exists "storage_project_images_admin_update" on storage.objects;
+drop policy if exists "storage_project_images_admin_delete" on storage.objects;
+drop policy if exists "storage_files_admin_insert" on storage.objects;
+drop policy if exists "storage_files_admin_update" on storage.objects;
+drop policy if exists "storage_files_admin_delete" on storage.objects;
 
 -- Public read
 create policy "storage_project_images_public_read"

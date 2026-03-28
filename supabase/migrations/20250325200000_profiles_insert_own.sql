@@ -4,6 +4,7 @@
 
 grant insert on table public.profiles to authenticated;
 
+drop policy if exists "profiles_insert_own" on public.profiles;
 create policy "profiles_insert_own"
   on public.profiles
   for insert
